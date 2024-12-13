@@ -37,59 +37,103 @@
   </mat-card-content>
 </mat-card>
 
-<!-- Season Grid with Skeleton Loader -->
-<div class="season-grid">
-  @if(loading) {
-    @for (_ of [1, 2, 3, 4, 5]; track _) {
-    <mat-card *ngFor="let _ of [1,2,3,4,5]" class="season-card">
-      <div class="spinner-container">
-        <mat-spinner></mat-spinner>
-      </div>
-    </mat-card>
-  }
-}
-  @else { @for(season of filteredSeasons; track season) {
-  <mat-card class="season-card">
-    <div class="season-content">
-      <div class="season-image-wrapper">
-        @if (!season.showTrailer) {
-        <img
-          mat-card-image
-          class="season-image"
-          [src]="season.images.jpg.image_url"
-          [alt]="season.title"
-        />
-        } @if (!season.showTrailer){
-          <div class="play-trailer-overlay" (click)="playTrailer(season)">
-            Play Trailer <mat-icon>play_circle_filled</mat-icon>
-          </div>
-        }
-      </div>
-
-      <div class="season-details">
-        <a class="season-title-link" [routerLink]="['/anime', season.mal_id]">
-          <h3 class="season-title">{{ season.title }}</h3>
-        </a>
-        <div class="season-genres">
-          @for (genre of season.genres; track genre) {
-          <span class="season-chip">{{ genre.name }}</span>
-          }
-        </div>
-        <div class="season-synopsis-container">
-          <div class="season-type mb-2">
-            <p><strong>Aired:</strong> {{ season.aired?.string }}</p>
-            <p><strong>Status:</strong> {{ season.status }}</p>
-            <p><strong>Rank:</strong> {{ season.rank || "N/A" }}</p>
-            <p><strong>Score:</strong> {{ season.score || "N/A" }}</p>
-            <p><strong>Duration:</strong> {{ season.duration }}</p>
-            <p><strong>Episodes:</strong> {{ season.episodes || "N/A" }}</p>
-          </div>
-          <p class="season-synopsis">{{ season.synopsis }}</p>
-        </div>
-      </div>
+<!-- Anime Grid (with Skeleton Loader) -->
+<div class="grid">
+  <!-- Skeleton Loader for Anime Cards -->
+  @if(loading) { @for (_ of [1, 2, 3, 4, 5]; track _) {
+  <mat-card *ngFor="let _ of [1, 2, 3, 4, 5]" class="card">
+    <div class="spinner-container">
+      <mat-spinner></mat-spinner>
     </div>
   </mat-card>
-  }}
+  } } @else { @for(anime of filteredSeasons; track anime) {
+
+    @if (!loading) {
+    <mat-card class="card">
+      <div class="image-wrapper">
+        <img
+          mat-card-image
+          class="card-image"
+          src="{{ anime.images.jpg.image_url }}"
+          alt="{{ anime.title }}"
+        />
+        <div class="play-trailer-overlay" (click)="playTrailer(anime)">
+          Play Trailer <mat-icon>play_circle_filled</mat-icon>
+        </div>
+      </div>
+      <div class="details">
+        <a class="title-link" [routerLink]="['/anime', anime.mal_id]">
+          <h3 class="title">{{ anime.title }}</h3>
+        </a>
+
+        <ul class="info">
+          <li>
+            <mat-icon>tv</mat-icon> <strong>Type:</strong>
+            {{ anime.type || "N/A" }}
+          </li>
+          <li>
+            <mat-icon>schedule</mat-icon> <strong>Episodes:</strong>
+            {{ anime.episodes || "N/A" }}
+          </li>
+          <li>
+            <mat-icon>access_time</mat-icon> <strong>Duration:</strong>
+            {{ anime.duration || "N/A" }}
+          </li>
+          <li>
+            <mat-icon>event</mat-icon> <strong>Aired:</strong>
+            {{ anime.aired?.string || "N/A" }}
+          </li>
+          <li>
+            <mat-icon>stars</mat-icon> <strong>Rating:</strong>
+            {{ anime.rating || "N/A" }}
+          </li>
+          <!-- <li>
+            <mat-icon>translate</mat-icon> <strong>English:</strong>
+            {{ anime.title_english || "N/A" }}
+          </li>
+          <li>
+            <mat-icon>translate</mat-icon> <strong>Japanese:</strong>
+            {{ anime.title_japanese || "N/A" }}
+          </li> -->
+        </ul>
+        <div
+          class="synopsis-container"
+          [ngClass]="{ scrollable: anime.synopsis?.length > 150 }"
+        >
+          <p class="synopsis">{{ anime.synopsis }}</p>
+        </div>
+      </div>
+      <mat-divider></mat-divider>
+      <mat-card-actions class="actions">
+        <div class="stat">
+          <mat-icon>star</mat-icon>
+          <span>{{ anime.score || "N/A" }}</span>
+        </div>
+        <div class="stat">
+          <mat-icon>military_tech</mat-icon>
+          <span>{{ anime.rank || "N/A" }}</span>
+        </div>
+        <div class="stat">
+          <mat-icon>favorite</mat-icon>
+          <span>{{ anime.favorites || "N/A" }}</span>
+        </div>
+        <div class="stat">
+          <mat-icon>people</mat-icon>
+          <span>{{ anime.members || "N/A" }}</span>
+        </div>
+        <div class="stat">
+          <mat-icon>trending_up</mat-icon>
+          <span>{{ anime.popularity || "N/A" }}</span>
+        </div>
+      </mat-card-actions>
+    </mat-card>
+
+    } @else {
+    <div class="spinner-container">
+      <mat-spinner></mat-spinner>
+    </div>
+    }
+  } }
 </div>
 
 <mat-paginator
@@ -100,4 +144,5 @@
   (page)="onPageChange($event)"
   [showFirstLastButtons]="true"
   [hidePageSize]="true"
-></mat-paginator>
+>
+</mat-paginator>

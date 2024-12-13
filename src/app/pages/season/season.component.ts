@@ -81,7 +81,7 @@ export class SeasonComponent {
 
   constructor() {
     this.filterForm = this.fb.group({
-      year: [new Date().getFullYear() + 1],
+      year: [new Date().getFullYear()],
       season: [new Date().getMonth() > 8 ? 'winter' : 'spring'],
       media: ['tv'],
     });
