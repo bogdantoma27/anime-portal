@@ -1,0 +1,7 @@
+<button (click)="fetchUser()">Get User</button>
+@if(user) {
+<div>
+  <h2>{{ user.username }}</h2>
+  <p>{{ user.location }}</p>
+</div>
+}

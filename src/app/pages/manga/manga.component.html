@@ -1,0 +1,8 @@
+<button (click)="fetchManga()">Get Manga</button>
+@if(manga) {
+<div>
+  <h2>{{ manga.title }}</h2>
+  <p>{{ manga.synopsis }}</p>
+  <img [src]="manga.images.jpg.image_url" />
+</div>
+}

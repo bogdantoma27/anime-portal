@@ -1,0 +1,23 @@
+@switch (isDarkThemeActive()) { @case (true) {
+  <button
+    mat-mini-fab
+    extended
+    color="primary"
+    class="dark-mode"
+    (click)="switchTheme()"
+    [attr.aria-label]="getThemeToggleLabel()"
+  >
+    <mat-icon class="track is-dark-mode">dark_mode</mat-icon>
+  </button>
+  } @case (false) {
+  <button
+    mat-mini-fab
+    extended
+    color="primary"
+    class="light-mode"
+    (click)="switchTheme()"
+    [attr.aria-label]="getThemeToggleLabel()"
+  >
+    <mat-icon class="track">light_mode</mat-icon>
+  </button>
+  } }

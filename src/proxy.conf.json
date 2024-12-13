@@ -1,0 +1,8 @@
+{
+  "/v1": {
+    "target": "https://myanimelist.net",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug"
+  }
+}

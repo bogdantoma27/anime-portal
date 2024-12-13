@@ -1,1 +1,75 @@
-/* You can add global styles to this file, and also import other style files */
+@use "@angular/material" as mat;
+
+
+html {
+  color-scheme: light-dark;
+  @include mat.theme(
+    (
+      color: mat.$azure-palette,
+      typography: (
+        plain-family: Open Sans,
+        brand-family: Manjari,
+        bold-weight: 900,
+        medium-weight: 500,
+        regular-weight: 300,
+      ),
+      density: -1,
+    )
+  );
+  .mat-toolbar {
+    --mat-toolbar-container-background-color: #1a1b1f;
+  }
+}
+
+body {
+  color-scheme: dark;
+  background: #000000e8 !important;
+  // background: var(--mat-sys-primary-container);
+
+  .mat-toolbar {
+    --mat-toolbar-container-background-color: #1a1b1f;
+  }
+}
+
+// body.dark-theme {
+//   color-scheme: dark;
+//   background: #000000e8 !important;
+//   // background: var(--mat-sys-primary-container);
+
+//   .mat-toolbar {
+//     --mat-toolbar-container-background-color: #1a1b1f;
+//   }
+// }
+
+// body.light-theme {
+//   color-scheme: light;
+
+//   .mat-toolbar {
+//     --mat-toolbar-container-background-color: #3c3b4f;
+//     --mat-toolbar-container-text-color: #ffffff;
+//     --mdc-icon-button-icon-color: #ffffff;
+//   }
+// }
+
+html,
+body {
+  height: 100%;
+}
+body {
+  margin: 0;
+}
+
+.select-panel {
+  // max-height: max-content !important;
+  max-height: 350px !important;
+}
+
+.paginator-expansion .mat-mdc-paginator-range-label {
+  margin: 0 !important;
+  display: none;
+}
+// bootstrap dark theme override bg color
+// [data-bs-theme="dark"] {
+//   --bs-body-bg: #121316 !important;
+// }
+

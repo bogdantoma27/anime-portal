@@ -1,0 +1,7 @@
+<button (click)="fetchAnimeReviews()">Get Anime Reviews</button>
+@for(review of reviews; track review.mal_id) {
+<div>
+  <p>{{ review.content }}</p>
+  <p><strong>By: </strong>{{ review.reviewer.username }}</p>
+</div>
+}

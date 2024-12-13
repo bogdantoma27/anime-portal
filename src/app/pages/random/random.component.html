@@ -1,0 +1,7 @@
+<button (click)="fetchRandomAnime()">Get Random Anime</button>
+@if(randomAnime) {
+<div>
+  <h2>{{ randomAnime.title }}</h2>
+  <img [src]="randomAnime.images.jpg.image_url" />
+</div>
+}

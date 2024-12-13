@@ -1,0 +1,195 @@
+<div class="anime-details-container mat-elevation-z8">
+  <div class="header">
+    <!-- Left Side: Image, Title, and Details -->
+    <div class="left-content col-md-6">
+      <img
+        [src]="anime.images?.jpg.large_image_url"
+        alt="{{ anime.title }}"
+        class="anime-poster img-fluid"
+      />
+      <div class="anime-header-content">
+        <h1>{{ anime.title }}</h1>
+        @if(anime.title_english) {
+        <h3>{{ anime.title_english }}</h3>
+        }
+        <p><strong>Japanese:</strong> {{ anime.title_japanese }}</p>
+        <p><strong>Aired:</strong> {{ anime.aired.string }}</p>
+        <p><strong>Episodes:</strong> {{ anime.episodes }}</p>
+        <p><strong>Genres:</strong> {{ getFormattedGenres() }}</p>
+        <a [href]="anime.url" target="_blank" class="mal-link"
+          >View on MyAnimeList</a
+        >
+      </div>
+    </div>
+
+    <!-- Right Side: Synopsis, Statistics, Studios & Producers -->
+    <div class="right-content col-md-6">
+      <div class="synopsis">
+        <h2>Synopsis</h2>
+        <p>{{ anime.synopsis }}</p>
+      </div>
+
+      <!-- Statistics Section under Synopsis -->
+      <div class="anime-stats">
+        <h3>Statistics</h3>
+        <div class="stat-item"><strong>Score:</strong> {{ anime.score }}</div>
+        <div class="stat-item"><strong>Rank:</strong> #{{ anime.rank }}</div>
+        <div class="stat-item">
+          <strong>Popularity:</strong> #{{ anime.popularity }}
+        </div>
+        <div class="stat-item">
+          <strong>Members:</strong> {{ anime.members }}
+        </div>
+        <div class="stat-item">
+          <strong>Favorites:</strong> {{ anime.favorites }}
+        </div>
+        <div class="stat-item"><strong>Season:</strong> {{ anime.season }}</div>
+        <div class="stat-item">
+          <strong>Aired:</strong> {{ anime.aired.string }}
+        </div>
+        <div class="stat-item">
+          <strong>Duration:</strong> {{ anime.duration }}
+        </div>
+        <div class="stat-item">
+          <strong>Episodes:</strong> {{ anime.episodes }}
+        </div>
+      </div>
+
+      <!-- Studios & Producers Section under Statistics -->
+      <div class="anime-studios-producers">
+        <h3>Studios & Producers</h3>
+        <div class="stat-item">
+          <strong>Studios:</strong> {{ getFormattedStudios() }}
+        </div>
+        <div class="stat-item">
+          <strong>Producers:</strong> {{ getFormattedProducers() }}
+        </div>
+        <div class="stat-item">
+          <strong>Streaming:</strong> {{ anime.streaming || "N/A" }}
+        </div>
+        <div class="stat-item">
+          <strong>Licensors:</strong> {{ getFormattedLicensors() }}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="expansion-panels">
+    @if(anime.staff?.length) {
+    <mat-expansion-panel>
+      <mat-expansion-panel-header>
+        <mat-panel-title>Staff</mat-panel-title>
+      </mat-expansion-panel-header>
+      <ul>
+        @for(staff of anime.staff; track staff) {
+        <li>
+          <a [href]="staff.person.url" target="_blank">
+            <img
+              [src]="staff.person.images.jpg.image_url"
+              alt="{{ staff.person.name }}"
+              class="staff-image"
+            />
+            <span>{{ staff.person.name }}</span> -
+            {{ staff.positions.join(", ") }}
+          </a>
+        </li>
+        }
+      </ul>
+    </mat-expansion-panel>
+    } @if(anime.opening_theme?.length) {
+    <mat-expansion-panel>
+      <mat-expansion-panel-header>
+        <mat-panel-title>Opening Theme</mat-panel-title>
+      </mat-expansion-panel-header>
+      <p>{{ anime.opening_theme.join(", ") }}</p>
+    </mat-expansion-panel>
+    } @if(anime.ending_theme?.length) {
+    <mat-expansion-panel>
+      <mat-expansion-panel-header>
+        <mat-panel-title>Ending Theme</mat-panel-title>
+      </mat-expansion-panel-header>
+      <p>{{ anime.ending_theme.join(", ") }}</p>
+    </mat-expansion-panel>
+    } @if(anime.characters?.length) {
+    <!-- Characters Section -->
+    <mat-expansion-panel expanded>
+      <mat-expansion-panel-header>
+        <mat-panel-title>Characters</mat-panel-title>
+      </mat-expansion-panel-header>
+      <div class="character-list row">
+        @for(character of anime.characters; track character) {
+        <div class="character-card col-6 col-sm-4 col-md-3 mb-4">
+          <img
+            [src]="character.image"
+            alt="{{ character.name }}"
+            class="character-image img-fluid"
+          />
+          <p class="character-name">
+            {{ character.name }}
+            <span class="role">({{ character.role }})</span>
+          </p>
+
+          <!-- Display voice actors with their languages in parentheses -->
+          @if(character.voice_actors?.length) {
+          <p><strong>Voice Actor(s):</strong></p>
+          <div *ngFor="let actor of character.voice_actors; let i = index">
+            @if(i === 0 || actor.language !== character.voice_actors[i - 1]?.language) {
+              <p>
+                <span>{{ actor.person }} </span>
+                <strong>({{ actor.language }})</strong>
+              </p>
+            }
+          </div>
+          }
+        </div>
+        }
+      </div>
+    </mat-expansion-panel>
+    } @if(anime.relations?.length) {
+    <mat-expansion-panel expanded>
+      <mat-expansion-panel-header>
+        <mat-panel-title>Relations</mat-panel-title>
+      </mat-expansion-panel-header>
+      <ul>
+        @for(relation of anime.relations; track relation) {
+        <li>
+          <a [href]="relation.entry[0].url" target="_blank">
+            {{ relation.entry[0].name }} ({{ relation.relation }})
+          </a>
+        </li>
+        }
+      </ul>
+    </mat-expansion-panel>
+    }
+
+    <!-- Recommendations Section -->
+    <mat-expansion-panel *ngIf="anime.recommendations?.length">
+      <mat-expansion-panel-header>
+        <mat-panel-title>Recommendations</mat-panel-title>
+      </mat-expansion-panel-header>
+      <ul>
+        @for(recommendation of anime.recommendations; track
+        recommendation) {
+        <li>
+          <a [href]="recommendation.url" target="_blank">{{
+            recommendation.entry.title
+          }}</a>
+          - {{ recommendation.relation }}
+        </li>
+        }
+      </ul>
+    </mat-expansion-panel>
+
+    <!-- Latest Reviews Section -->
+    <mat-expansion-panel *ngIf="anime.reviews?.length">
+      <mat-expansion-panel-header>
+        <mat-panel-title>Latest Reviews</mat-panel-title>
+      </mat-expansion-panel-header>
+      <div *ngFor="let review of anime.reviews">
+        <p>
+          <strong>{{ review.user.username }}:</strong> {{ review.review }}
+        </p>
+      </div>
+    </mat-expansion-panel>
+  </div>
+</div>

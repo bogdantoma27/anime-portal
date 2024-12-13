@@ -1,0 +1,6 @@
+<button (click)="fetchAnimeGenres()">Get Anime Genres</button>
+@for(genre of genres; track genre.id) {
+<div>
+  <p>{{ genre.name }}</p>
+</div>
+}

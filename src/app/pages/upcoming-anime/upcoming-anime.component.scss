@@ -1,0 +1,41 @@
+@use "../top-anime/top-anime.component.scss" as topAnime;
+
+.countdown-text {
+  background-color: #2b2b36;
+  padding: 5px 10px;
+  border-radius: 8px;
+  display: inline-block;
+  font-size: 14px;
+  font-weight: bold;
+  color: #ffcc00;
+  text-align: center;
+}
+
+.alternative-titles {
+  font-size: 12px; /* Smaller font size */
+  color: #cccccc; /* Greyish color */
+  font-style: italic; /* Italicize the text */
+  margin-bottom: 10px; /* Separate titles from synopsis */
+
+  p {
+    margin: 2px 0; /* Small margin for each title */
+  }
+}
+
+.details {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1; /* This ensures the content area takes up the available space */
+}
+
+.synopsis-container {
+  margin-top: auto; /* Ensures the synopsis container moves to the bottom */
+}
+
+.title {
+  min-height: 0 !important; /* Reset the min-height to allow the title to shrink */
+}
+
+.actions {
+  margin-top: auto; /* Pushes the actions to the bottom */
+}

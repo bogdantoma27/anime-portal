@@ -1,0 +1,103 @@
+<mat-card class="filter-card">
+  <mat-card-header>
+    <mat-card-title class="mb-4">Filter Seasons</mat-card-title>
+  </mat-card-header>
+  <mat-card-content [formGroup]="filterForm">
+    <div class="filter-actions">
+      <!-- Year Filter -->
+      <mat-form-field appearance="fill">
+        <mat-label>Year</mat-label>
+        <mat-select panelClass="select-panel" formControlName="year">
+          @for (year of availableYears; track year) {
+          <mat-option [value]="year">{{ year }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <!-- Season Filter -->
+      <mat-form-field appearance="fill">
+        <mat-label>Season</mat-label>
+        <mat-select panelClass="select-panel" formControlName="season">
+          @for (season of seasonOptions; track season) {
+          <mat-option [value]="season.value">{{ season.label }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <!-- Media Filter -->
+      <mat-form-field appearance="fill">
+        <mat-label>Media</mat-label>
+        <mat-select panelClass="select-panel" formControlName="media">
+          @for (media of mediaOptions; track media) {
+          <mat-option [value]="media.value">{{ media.label }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    </div>
+  </mat-card-content>
+</mat-card>
+
+<!-- Season Grid with Skeleton Loader -->
+<div class="season-grid">
+  @if(loading) {
+    @for (_ of [1, 2, 3, 4, 5]; track _) {
+    <mat-card *ngFor="let _ of [1,2,3,4,5]" class="season-card">
+      <div class="spinner-container">
+        <mat-spinner></mat-spinner>
+      </div>
+    </mat-card>
+  }
+}
+  @else { @for(season of filteredSeasons; track season) {
+  <mat-card class="season-card">
+    <div class="season-content">
+      <div class="season-image-wrapper">
+        @if (!season.showTrailer) {
+        <img
+          mat-card-image
+          class="season-image"
+          [src]="season.images.jpg.image_url"
+          [alt]="season.title"
+        />
+        } @if (!season.showTrailer){
+          <div class="play-trailer-overlay" (click)="playTrailer(season)">
+            Play Trailer <mat-icon>play_circle_filled</mat-icon>
+          </div>
+        }
+      </div>
+
+      <div class="season-details">
+        <a class="season-title-link" [routerLink]="['/anime', season.mal_id]">
+          <h3 class="season-title">{{ season.title }}</h3>
+        </a>
+        <div class="season-genres">
+          @for (genre of season.genres; track genre) {
+          <span class="season-chip">{{ genre.name }}</span>
+          }
+        </div>
+        <div class="season-synopsis-container">
+          <div class="season-type mb-2">
+            <p><strong>Aired:</strong> {{ season.aired?.string }}</p>
+            <p><strong>Status:</strong> {{ season.status }}</p>
+            <p><strong>Rank:</strong> {{ season.rank || "N/A" }}</p>
+            <p><strong>Score:</strong> {{ season.score || "N/A" }}</p>
+            <p><strong>Duration:</strong> {{ season.duration }}</p>
+            <p><strong>Episodes:</strong> {{ season.episodes || "N/A" }}</p>
+          </div>
+          <p class="season-synopsis">{{ season.synopsis }}</p>
+        </div>
+      </div>
+    </div>
+  </mat-card>
+  }}
+</div>
+
+<mat-paginator
+  [length]="pagination.items.total"
+  [pageSize]="pagination.items.per_page"
+  [pageIndex]="pagination.current_page - 1"
+  [pageSizeOptions]="[5, 10, 25]"
+  (page)="onPageChange($event)"
+  [showFirstLastButtons]="true"
+  [hidePageSize]="true"
+></mat-paginator>

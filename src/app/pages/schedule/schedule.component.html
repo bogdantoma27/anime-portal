@@ -1,0 +1,6 @@
+<button (click)="fetchSchedules()">Get Anime Schedules</button>
+@for(schedule of schedules; track schedule.mal_id) {
+<div>
+  <p>{{ schedule.title }}</p>
+</div>
+}

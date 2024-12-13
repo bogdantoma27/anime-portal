@@ -1,0 +1,6 @@
+<button (click)="fetchAnimeRecommendations()">Get Anime Recommendations</button>
+@for(recommendation of recommendations; track recommendation.entry.mal_id) {
+<div>
+  <p>{{ recommendation.entry.title }}</p>
+</div>
+}

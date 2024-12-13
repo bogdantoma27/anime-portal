@@ -1,0 +1,6 @@
+<button (click)="fetchWatchEpisodes()">Get Watch Episodes</button>
+@for(entry of watchEntries; track entry.mal_id) {
+<div>
+  <p>{{ entry.title }}</p>
+</div>
+}
