@@ -6,6 +6,8 @@ import { ReviewComponent } from './pages/review/review.component';
 import { UserComponent } from './pages/user/user.component';
 import { HomeComponent } from './components/home/home.component';
 import { AnimeDetailsComponent } from './pages/anime-details/anime-details.component';
+import { MangaReadComponent } from './pages/manga-read/manga-read.component';
+import { MangaSearchComponent } from './pages/manga-search/manga-search.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },
@@ -13,6 +15,8 @@ export const routes: Routes = [
   { path: 'anime', component: AnimeComponent },
   { path: 'anime/:id', component: AnimeDetailsComponent },
   { path: 'manga', component: MangaComponent },
+  { path: 'manga-read', component: MangaSearchComponent },
+  { path: 'manga-read/:id', component: MangaReadComponent },
   { path: 'season', component: SeasonComponent },
   { path: 'user', component: UserComponent },
   { path: 'review', component: ReviewComponent },

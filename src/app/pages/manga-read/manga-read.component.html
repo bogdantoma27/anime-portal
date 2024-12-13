@@ -1,0 +1,58 @@
+<mat-card class="manga-reader-card">
+  <!-- Top Navigation -->
+  @if (isImagesLoaded) {
+    <h1 class="manga-title text-center">{{ mangaTitle }}
+      <p></p><h4>Chapter {{ currentChapterIndex + 1 }} / {{ chapters.length }}</h4>
+    </h1>
+
+    <div class="navigation-buttons top-navigation">
+      <button mat-fab (click)="navigateChapter('previous')" [disabled]="!hasPreviousChapter()">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+
+      <button mat-fab (click)="navigateBackToSearch()">
+        <mat-icon>search</mat-icon>
+      </button>
+
+      <button mat-fab (click)="navigateChapter('next')" [disabled]="!hasNextChapter()">
+        <mat-icon class="center-icon">arrow_forward</mat-icon>
+      </button>
+    </div>
+  }
+
+  <!-- Manga Content -->
+  @if (chapterData) {
+    <div class="image-container">
+      @if (isImagesLoaded) {
+        @for (image of images; track image) {
+          <img [src]="image" alt="Manga image" class="manga-image"/>
+        }
+      } @else {
+        <div class="loading-container">
+          <mat-spinner diameter="50"></mat-spinner>
+        </div>
+      }
+    </div>
+  } @else {
+    <div class="loading-container">
+      <mat-spinner diameter="50"></mat-spinner>
+    </div>
+  }
+
+  <!-- Bottom Navigation -->
+  @if (isImagesLoaded) {
+    <div class="navigation-buttons bottom-navigation">
+      <button mat-fab (click)="navigateChapter('previous')" [disabled]="!hasPreviousChapter()">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+
+      <button mat-fab (click)="navigateBackToSearch()">
+        <mat-icon>search</mat-icon>
+      </button>
+
+      <button mat-fab (click)="navigateChapter('next')" [disabled]="!hasNextChapter()">
+        <mat-icon class="center-icon">arrow_forward</mat-icon>
+      </button>
+    </div>
+  }
+</mat-card>
