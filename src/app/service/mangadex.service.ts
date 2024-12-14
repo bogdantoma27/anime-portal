@@ -18,7 +18,7 @@ interface MangaChapterResponse {
 })
 export class MangadexService {
 
-  private apiBaseUrl = 'https://api.mangadex.org';
+  private apiBaseUrl = 'https://cors-anywhere.herokuapp.com/https://api.mangadex.org';
 
   constructor(private http: HttpClient) { }
 

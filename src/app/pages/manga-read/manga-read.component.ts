@@ -46,7 +46,7 @@ export class MangaReadComponent implements OnInit {
 
   fetchChapterFeed(mangaId: string): void {
     this.http
-      .get<any>(`https://api.mangadex.org/manga/${mangaId}/feed`)
+      .get<any>(`https://cors-anywhere.herokuapp.com/https://api.mangadex.org/manga/${mangaId}/feed`)
       .subscribe((response) => {
         if (response.result === 'ok' && response.data.length > 0) {
           this.mangaTitle = response.data[0].attributes.title;
@@ -68,7 +68,7 @@ export class MangaReadComponent implements OnInit {
   loadChapterData(chapterId: string): void {
     this.isImagesLoaded = false;
     this.http
-      .get<any>(`https://api.mangadex.org/at-home/server/${chapterId}`)
+      .get<any>(`https://cors-anywhere.herokuapp.com/https://api.mangadex.org/at-home/server/${chapterId}`)
       .subscribe((response) => {
         if (response.result === 'ok' && response.chapter) {
           this.baseUrl = response.baseUrl;
