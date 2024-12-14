@@ -10,29 +10,68 @@ import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatPaginatorModule } from '@angular/material/paginator';
-
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-manga-search',
   templateUrl: './manga-search.component.html',
   styleUrls: ['./manga-search.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, MatListModule, MatFormFieldModule,
-    MatInputModule, MatCardModule, MatButtonModule, MatIconModule,
-    MatPaginatorModule
-  ]
+  imports: [
+    CommonModule,
+    FormsModule,
+    MatListModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatCardModule,
+    MatButtonModule,
+    MatIconModule,
+    MatPaginatorModule,
+    MatProgressSpinnerModule
+  ],
 })
 export class MangaSearchComponent {
   query: string = '';
   searchResults: any[] = [];
 
-  constructor(private mangadexService: MangadexService, private router: Router) { }
+  constructor(
+    private mangadexService: MangadexService,
+    private router: Router
+  ) {}
 
-  // Automatically trigger the search on every keyup, with debouncing to prevent too many requests
   searchManga() {
     if (this.query.trim()) {
-      this.mangadexService.searchManga(this.query).subscribe(response => {
-        this.searchResults = response.data;
+      this.mangadexService.searchManga(this.query).subscribe((response) => {
+        this.searchResults = response.data.map((manga) => ({
+          ...manga,
+          loading: true, // Add a loading flag for each manga
+          coverUrl: '' // Initialize cover URL as empty
+        }));
+
+        // Fetch cover images with a delay of 800ms between calls
+        let delay = 0; // Initialize delay time
+        this.searchResults.forEach((manga) => {
+          const title = manga.attributes?.title?.en || manga.attributes?.title?.ja;
+
+          setTimeout(() => {
+            this.mangadexService.getCoverFromJikan(title).subscribe(
+              (jikanResponse) => {
+                manga.coverUrl =
+                  jikanResponse.data && jikanResponse.data.length > 0
+                    ? jikanResponse.data[0].images.jpg.large_image_url
+                    : 'assets/default-cover.jpg';
+                manga.loading = false; // Set loading to false after fetching
+              },
+              () => {
+                // On error, set a default cover and stop spinner
+                manga.coverUrl = 'assets/default-cover.jpg';
+                manga.loading = false;
+              }
+            );
+          }, delay);
+
+          delay += 1000; // Increment delay for the next request
+        });
       });
     } else {
       this.searchResults = []; // Clear results if query is empty
@@ -51,17 +90,9 @@ export class MangaSearchComponent {
     }
   }
 
-  getMangaCoverUrl(manga: any): string {
-    const cover = manga?.relationships?.find((rel: any) => rel.type === 'cover_art');
-    if (cover && cover.attributes?.fileName) {
-      return `https://uploads.mangadex.org/covers/${manga.id}/${cover.attributes.fileName}`;
-    }
-    return 'assets/default-cover.jpg'; // Fallback default image
-  }
-
   navigateToMangaRead(mangaId: string, mangaTitle: string): void {
     this.router.navigate(['/manga-read', mangaId], {
-      queryParams: { title: mangaTitle }
+      queryParams: { title: mangaTitle },
     });
   }
 }

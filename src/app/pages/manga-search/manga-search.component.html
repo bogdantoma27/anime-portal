@@ -5,15 +5,16 @@
   <mat-card-content>
     <mat-form-field class="search-field">
       <mat-label>Search for manga</mat-label>
+      <!-- [(ngModel)]="query"
+      (ngModelChange)="onQueryChange()" -->
       <input
         matInput
         [(ngModel)]="query"
-        (ngModelChange)="onQueryChange()"
         placeholder="Enter manga title"
       />
-      <!-- <button mat-button matSuffix (click)="searchManga()">
+      <button mat-fab matSuffix (click)="searchManga(); $event.stopPropagation()" style="border-radius: 0">
         <mat-icon>search</mat-icon>
-      </button> -->
+      </button>
     </mat-form-field>
   </mat-card-content>
 </mat-card>
@@ -22,12 +23,17 @@
   @for (manga of searchResults; track $index) {
   <mat-card class="card">
     <div class="image-wrapper">
-      <img
-        mat-card-image
-        class="card-image"
-        [src]="getMangaCoverUrl(manga)"
-        alt="{{ manga.attributes?.title?.en }}"
-      />
+      <div *ngIf="manga.loading; else imageTemplate" class="spinner-wrapper">
+        <mat-spinner diameter="50"></mat-spinner>
+      </div>
+      <ng-template #imageTemplate>
+        <img
+          mat-card-image
+          class="card-image"
+          [src]="manga.coverUrl"
+          [alt]="manga.attributes?.title?.en"
+        />
+      </ng-template>
     </div>
     <div class="details">
       <a
@@ -60,7 +66,7 @@
         )
       "
     >
-      -> Read Manga <-
+      <mat-icon class="me-2">arrow_forward</mat-icon> Read Manga <mat-icon class="ms-2">arrow_backward</mat-icon>
     </mat-card-actions>
   </mat-card>
   }
