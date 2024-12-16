@@ -11,9 +11,12 @@ export class MangaService {
     return this.api.get(`/manga/${id}`);
   }
 
-  searchManga(query: string, page: number = 1): Observable<any> {
-    const params = new HttpParams().set('q', query).set('page', page);
-    return this.api.get('/manga', {params});
+  searchManga(params: HttpParams | { [key: string]: string | number }): Observable<any> {
+    const httpParams = params instanceof HttpParams
+      ? params
+      : new HttpParams({ fromObject: params });
+
+    return this.api.get<any>('/manga', { params: httpParams });
   }
 
   getMangaCharacters(id: number): Observable<any> {
@@ -34,5 +37,9 @@ export class MangaService {
 
   getMangaRecommendations(id: number): Observable<any> {
     return this.api.get(`/manga/${id}/recommendations`);
+  }
+
+  getMangaReviews(id: number): Observable<any> {
+    return this.api.get(`/manga/${id}/reviews`);
   }
 }

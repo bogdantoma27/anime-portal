@@ -1,4 +1,5 @@
 export interface Anime {
+  showFullSynopsis?: boolean;
   mal_id: number;
   url: string;
   images: {
@@ -79,15 +80,3 @@ export interface AnimeSearchResponse {
   data: Anime[];
   pagination: { last_visible_page: number; has_next_page: boolean };
 }
-
-// "mal_id",
-// "title",
-// "start_date",
-// "end_date",
-// "episodes",
-// "score",
-// "scored_by",
-// "rank",
-// "popularity",
-// "members",
-// "favorites"

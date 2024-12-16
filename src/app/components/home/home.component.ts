@@ -1,4 +1,4 @@
-import { Component, inject, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { UpcomingAnimeComponent } from "../../pages/upcoming-anime/upcoming-anime.component";
 import { TopAnimeComponent } from "../../pages/top-anime/top-anime.component";
@@ -17,7 +17,7 @@ import { MatCardModule } from '@angular/material/card';
   styleUrls: ['./home.component.scss'],
 })
 export class HomeComponent implements OnInit {
- ngOnInit() {
+  constructor() {}
 
- }
+  ngOnInit(): void {}
 }

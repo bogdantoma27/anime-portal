@@ -14,7 +14,6 @@ import {
   MatPaginatorModule,
   PageEvent,
 } from '@angular/material/paginator';
-import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatOptionModule } from '@angular/material/core';
@@ -29,6 +28,9 @@ import { YouTubePlayerModule } from '@angular/youtube-player';
 import { MatDialog } from '@angular/material/dialog';
 import { YoutubeDialogComponent } from '../../components/youtube-dialog/youtube-dialog.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MediaType } from '../../enums/anime.enum';
+import { SeasonType } from '../../enums/season.enum';
+import { SEASON_MEDIA_OPTIONS, SEASON_OPTIONS } from '../../interface/constants.interface.';
 
 @Component({
   selector: 'app-season',
@@ -72,8 +74,8 @@ export class SeasonComponent {
   };
 
   availableYears = [...Array(109).keys()].map(i => (new Date().getFullYear() + 1) - i);
-  seasonOptions = [{ value: 'winter', label: 'Winter' }, { value: 'spring', label: 'Spring' }];
-  mediaOptions = [{ value: 'tv', label: 'TV' }, { value: 'movie', label: 'Movie' }];
+  seasonOptions = SEASON_OPTIONS;
+  mediaOptions = SEASON_MEDIA_OPTIONS;
 
   private apiService = inject(ApiService);
   private fb = inject(FormBuilder);
@@ -82,8 +84,8 @@ export class SeasonComponent {
   constructor() {
     this.filterForm = this.fb.group({
       year: [new Date().getFullYear()],
-      season: [new Date().getMonth() > 8 ? 'winter' : 'spring'],
-      media: ['tv'],
+      season: [new Date().getMonth() > 8 ? SeasonType.WINTER : SeasonType.SPRING],
+      media: [MediaType.TV],
     });
   }
 
@@ -142,7 +144,7 @@ export class SeasonComponent {
 
   playTrailer(season: any): void {
     this.dialog.open(YoutubeDialogComponent, {
-      data: { videoId: season.trailer.youtube_id }, // Pass the video ID to the dialog
+      data: { videoId: season.trailer?.youtube_id }, // Pass the video ID to the dialog
     });
   }
 }

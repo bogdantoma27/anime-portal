@@ -1,0 +1,77 @@
+export enum MediaType {
+  TV = 'tv',
+  MOVIE = 'movie',
+  OVA = 'ova',
+  SPECIAL = 'special',
+  ONA = 'ona',
+  MUSIC = 'music',
+}
+
+export enum OrderBy {
+  TITLE = 'title',
+  START_DATE = 'start_date',
+  END_DATE = 'end_date',
+  EPISODES = 'episodes',
+  SCORE = 'score',
+  RANK = 'rank',
+  POPULARITY = 'popularity',
+  FAVORITES = 'favorites',
+}
+
+export enum SortOrder {
+  ASC = 'asc',
+  DESC = 'desc',
+}
+
+export enum Status {
+  AIRING = 'airing',
+  COMPLETED = 'completed',
+  UPCOMING = 'upcoming',
+}
+
+export enum AnimeGenre {
+  ACTION = 1,
+  ADVENTURE = 2,
+  CARS = 3,
+  COMEDY = 4,
+  AVANTE_GARDE = 5,
+  DEMONS = 6,
+  MYSTERY = 7,
+  DRAMA = 8,
+  ECCHI = 9,
+  FANTASY = 10,
+  GAME = 11,
+  HENTAI = 12,
+  HISTORICAL = 13,
+  HORROR = 14,
+  KIDS = 15,
+  MARTIAL_ARTS = 17,
+  MECHA = 18,
+  MUSIC = 19,
+  PARODY = 20,
+  SAMURAI = 21,
+  ROMANCE = 22,
+  SCHOOL = 23,
+  SCI_FI = 24,
+  SHOUJO = 25,
+  GIRLS_LOVE = 26,
+  SHOUNEN = 27,
+  BOYS_LOVE = 28,
+  SPACE = 29,
+  SPORTS = 30,
+  SUPER_POWER = 31,
+  VAMPIRE = 32,
+  HAREM = 35,
+  SLICE_OF_LIFE = 36,
+  SUPERNATURAL = 37,
+  MILITARY = 38,
+  POLICE = 39,
+  PSYCHOLOGICAL = 40,
+  SUSPENSE = 41,
+  SEINEN = 42,
+  JOSEI = 43,
+  AWARD_WINNING = 46,
+  GOURMET = 47,
+  WORK_LIFE = 48,
+  EROTICA = 49,
+}

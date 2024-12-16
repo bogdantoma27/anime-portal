@@ -10,7 +10,9 @@ export class ToasterService {
     options = {
         positionClass: 'toast-top-right',
         progressBar: false,
-        preventDuplicates: false,
+        preventDuplicates: true,
+        closeButton: true,
+
     }
 
     success(message: string, title?: string) {

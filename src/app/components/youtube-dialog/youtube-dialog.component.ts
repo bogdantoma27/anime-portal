@@ -7,7 +7,7 @@ import {
 } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
-import { YouTubePlayerModule, YouTubePlayer } from '@angular/youtube-player';
+import { YouTubePlayerModule } from '@angular/youtube-player';
 
 @Component({
   selector: 'app-youtube-dialog',
@@ -51,26 +51,4 @@ export class YoutubeDialogComponent {
       this.playerHeight = 315;
     }
   }
-
-  /* it goes fullscreen but you can't exit it...therefore I removed it for now
-
-  onPlayerStateChange(event: YT.OnStateChangeEvent): void {
-    if (event.data === YT.PlayerState.PLAYING) {
-      this.enterFullscreen();
-    }
-  }
-
-  private enterFullscreen(): void {
-    const iframe = this.youtubePlayer.nativeElement.querySelector('iframe');
-    if (iframe.requestFullscreen) {
-      iframe.requestFullscreen();
-    } else if ((iframe as any).webkitRequestFullScreen) {
-      (iframe as any).webkitRequestFullScreen();
-    } else if ((iframe as any).mozRequestFullScreen) {
-      (iframe as any).mozRequestFullScreen();
-    } else if ((iframe as any).msRequestFullscreen) {
-      (iframe as any).msRequestFullscreen();
-    }
-  }
-    */
 }

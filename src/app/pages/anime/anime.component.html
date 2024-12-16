@@ -28,7 +28,7 @@
         <mat-select panelClass="select-panel" formControlName="type">
           <mat-option value="">Any</mat-option>
           @for (media of mediaOptions; track media) {
-          <mat-option [value]="media.value">{{ media.label }}</mat-option>
+            <mat-option [value]="media.value">{{ media.label }}</mat-option>
           }
         </mat-select>
       </mat-form-field>
@@ -37,11 +37,8 @@
       <mat-form-field appearance="fill">
         <mat-label>Genres</mat-label>
         <mat-select panelClass="select-panel" formControlName="genres" multiple>
-          <mat-option value="select-all" selectAll [allValues]="allGenres">
-            Select all
-          </mat-option>
           @for (genre of availableGenres; track genre) {
-          <mat-option [value]="genre.id">{{ genre.label }}</mat-option>
+            <mat-option [value]="genre.id">{{ genre.label }}</mat-option>
           }
         </mat-select>
       </mat-form-field>
@@ -51,9 +48,9 @@
         <mat-label>Status</mat-label>
         <mat-select panelClass="select-panel" formControlName="status">
           <mat-option value="">Any</mat-option>
-          <mat-option value="airing">Airing</mat-option>
-          <mat-option value="complete">Completed</mat-option>
-          <mat-option value="upcoming">Upcoming</mat-option>
+          @for( status of statusOptions; track status) {
+            <mat-option [value]="status.value">{{ status.label }}</mat-option>
+          }
         </mat-select>
       </mat-form-field>
 
@@ -62,9 +59,9 @@
         <mat-label>Order By</mat-label>
         <mat-select panelClass="select-panel" formControlName="orderBy">
           <mat-option value="">None</mat-option>
-          <mat-option value="score">Score</mat-option>
-          <mat-option value="popularity">Popularity</mat-option>
-          <mat-option value="date">Date</mat-option>
+          @for ( order of orderOptions; track order) {
+            <mat-option [value]="order.value">{{ order.label }}</mat-option>
+          }
         </mat-select>
       </mat-form-field>
 
@@ -84,100 +81,79 @@
 <!-- Anime Grid (with Skeleton Loader) -->
 <div class="grid">
   <!-- Skeleton Loader for Anime Cards -->
-  @if(loading) { @for (_ of [1, 2, 3, 4, 5]; track _) {
-  <mat-card *ngFor="let _ of [1, 2, 3, 4, 5]" class="card">
-    <div class="spinner-container">
-      <mat-spinner></mat-spinner>
-    </div>
-  </mat-card>
-  } } @else { @for(anime of filteredAnimes; track anime) {
-
-    @if (!loading) {
-    <mat-card class="card">
-      <div class="image-wrapper">
-        <img
-          mat-card-image
-          class="card-image"
-          src="{{ anime.images.jpg.image_url }}"
-          alt="{{ anime.title }}"
-        />
-        <div class="play-trailer-overlay" (click)="playTrailer(anime)">
-          Play Trailer <mat-icon>play_circle_filled</mat-icon>
+  @if(loading) {
+    @for (_ of [1, 2, 3, 4, 5]; track _) {
+      <mat-card class="card">
+        <div class="spinner-container">
+          <mat-spinner></mat-spinner>
         </div>
-      </div>
-      <div class="details">
-        <a class="title-link" [routerLink]="['/anime', anime.mal_id]">
-          <h3 class="title">{{ anime.title }}</h3>
-        </a>
-
-        <ul class="info">
-          <li>
-            <mat-icon>tv</mat-icon> <strong>Type:</strong>
-            {{ anime.type || "N/A" }}
-          </li>
-          <li>
-            <mat-icon>schedule</mat-icon> <strong>Episodes:</strong>
-            {{ anime.episodes || "N/A" }}
-          </li>
-          <li>
-            <mat-icon>access_time</mat-icon> <strong>Duration:</strong>
-            {{ anime.duration || "N/A" }}
-          </li>
-          <li>
-            <mat-icon>event</mat-icon> <strong>Aired:</strong>
-            {{ anime.aired?.string || "N/A" }}
-          </li>
-          <li>
-            <mat-icon>stars</mat-icon> <strong>Rating:</strong>
-            {{ anime.rating || "N/A" }}
-          </li>
-          <!-- <li>
-            <mat-icon>translate</mat-icon> <strong>English:</strong>
-            {{ anime.title_english || "N/A" }}
-          </li>
-          <li>
-            <mat-icon>translate</mat-icon> <strong>Japanese:</strong>
-            {{ anime.title_japanese || "N/A" }}
-          </li> -->
-        </ul>
-        <div
-          class="synopsis-container"
-          [ngClass]="{ scrollable: anime.synopsis?.length > 150 }"
-        >
-          <p class="synopsis">{{ anime.synopsis }}</p>
-        </div>
-      </div>
-      <mat-divider></mat-divider>
-      <mat-card-actions class="actions">
-        <div class="stat">
-          <mat-icon>star</mat-icon>
-          <span>{{ anime.score || "N/A" }}</span>
-        </div>
-        <div class="stat">
-          <mat-icon>military_tech</mat-icon>
-          <span>{{ anime.rank || "N/A" }}</span>
-        </div>
-        <div class="stat">
-          <mat-icon>favorite</mat-icon>
-          <span>{{ anime.favorites || "N/A" }}</span>
-        </div>
-        <div class="stat">
-          <mat-icon>people</mat-icon>
-          <span>{{ anime.members || "N/A" }}</span>
-        </div>
-        <div class="stat">
-          <mat-icon>trending_up</mat-icon>
-          <span>{{ anime.popularity || "N/A" }}</span>
-        </div>
-      </mat-card-actions>
-    </mat-card>
-
-    } @else {
-    <div class="spinner-container">
-      <mat-spinner></mat-spinner>
-    </div>
+      </mat-card>
     }
-  } }
+  }
+  @else {
+    @for(anime of filteredAnimes; track anime) {
+      @if (!loading) {
+        <mat-card class="card">
+          <div class="image-wrapper">
+            <img
+              mat-card-image
+              class="card-image"
+              src="{{ anime.images.jpg.image_url }}"
+              alt="{{ anime.title }}"
+            />
+            <div class="play-trailer-overlay" (click)="playTrailer(anime)">
+              Play Trailer <mat-icon>play_circle_filled</mat-icon>
+            </div>
+          </div>
+          <div class="details">
+            <a class="title-link" [routerLink]="['/anime', anime.mal_id]">
+              <h3 class="title">{{ anime.title }}</h3>
+            </a>
+
+            <ul class="info">
+              <li><mat-icon>tv</mat-icon> <strong>Type:</strong> {{ anime.type || "N/A" }}</li>
+              <li><mat-icon>schedule</mat-icon> <strong>Episodes:</strong> {{ anime.episodes || "N/A" }}</li>
+              <li><mat-icon>access_time</mat-icon> <strong>Duration:</strong> {{ anime.duration || "N/A" }}</li>
+              <li><mat-icon>event</mat-icon> <strong>Aired:</strong> {{ anime.aired?.string || "N/A" }}</li>
+              <li><mat-icon>stars</mat-icon> <strong>Rating:</strong> {{ anime.rating || "N/A" }}</li>
+            </ul>
+
+            <div class="synopsis-container" [ngClass]="{ scrollable: anime.synopsis?.length > 150 }">
+              <p class="synopsis">{{ anime.synopsis }}</p>
+            </div>
+          </div>
+          <mat-divider></mat-divider>
+          <mat-card-actions class="actions">
+            <div class="stat">
+              <mat-icon>star</mat-icon>
+              <span>{{ anime.score || "N/A" }}</span>
+            </div>
+            <div class="stat">
+              <mat-icon>military_tech</mat-icon>
+              <span>{{ anime.rank || "N/A" }}</span>
+            </div>
+            <div class="stat">
+              <mat-icon>favorite</mat-icon>
+              <span>{{ anime.favorites || "N/A" }}</span>
+            </div>
+            <div class="stat">
+              <mat-icon>people</mat-icon>
+              <span>{{ anime.members || "N/A" }}</span>
+            </div>
+            <div class="stat">
+              <mat-icon>trending_up</mat-icon>
+              <span>{{ anime.popularity || "N/A" }}</span>
+            </div>
+          </mat-card-actions>
+        </mat-card>
+      }
+      @else {
+        <div class="spinner-container">
+          <mat-spinner></mat-spinner>
+        </div>
+      }
+    }
+  }
 </div>
 
 <mat-paginator
@@ -188,5 +164,4 @@
   (page)="onPageChange($event)"
   [showFirstLastButtons]="true"
   [hidePageSize]="true"
->
-</mat-paginator>
+></mat-paginator>

@@ -2,70 +2,76 @@
   <mat-card-header class="interactive-header" (click)="toggleGrid()">
     <div class="header-content">
       <mat-icon class="me-3">{{ isGridVisible ? "expand_less" : "expand_more" }}</mat-icon>
-      Upcoming Animes
+      Upcoming Anime
     </div>
   </mat-card-header>
 
   <mat-card *ngIf="isGridVisible">
     <div class="grid">
-      @if (!loading) { @for (anime of filteredAnimes; track anime) {
-      <mat-card class="card">
-        <div class="image-wrapper">
-          <img
-            mat-card-image
-            class="card-image"
-            src="{{ anime.images.jpg.image_url }}"
-            alt="{{ anime.title }}"
-          />
-          <div class="play-trailer-overlay" (click)="playTrailer(anime)">
-            Play Trailer <mat-icon>play_circle_filled</mat-icon>
-          </div>
-        </div>
-        <div class="details">
-          <a class="title-link" [routerLink]="['/anime', anime.mal_id]">
-            <h3 class="title">{{ anime.title }}</h3>
-          </a>
-
-          <div class="alternative-titles">
-            <p *ngIf="anime.title_japanese">{{ anime.title_japanese }}</p>
-            <p
-              *ngIf="anime.title_english && anime.title_english !== anime.title"
-            >
-              {{ anime.title_english }}
-            </p>
-          </div>
-
-          <div
-            class="synopsis-container"
-            [ngClass]="{ scrollable: anime.synopsis.length > 150 }"
-          >
-            <p class="synopsis">
-              {{ anime.synopsis }}
-            </p>
-          </div>
-        </div>
-        <mat-divider></mat-divider>
-        <mat-card-actions class="actions">
-          <div class="countdown">
-            <div class="countdown-text">
-              Release:
-              <span [ngStyle]="{ color: 'white' }">
-                {{
-                  anime.aired.from ? countdownTimes[anime.mal_id] : "Unknown"
-                }}
-              </span>
+      <!-- If not loading, show anime cards -->
+      @if (!loading) {
+        @for (anime of filteredAnimes; track anime) {
+          <mat-card class="card">
+            <div class="image-wrapper">
+              <img
+                mat-card-image
+                class="card-image"
+                src="{{ anime.images.jpg.image_url }}"
+                alt="{{ anime.title }}"
+              />
+              <div class="play-trailer-overlay" (click)="playTrailer(anime)">
+                Play Trailer <mat-icon>play_circle_filled</mat-icon>
+              </div>
             </div>
-          </div>
-        </mat-card-actions>
-      </mat-card>
-      } } @else { @if(loading) { @for (_ of [1, 2, 3, 4, 5]; track _) {
-      <mat-card *ngFor="let _ of [1, 2, 3, 4, 5]" class="card">
-        <div class="spinner-container">
-          <mat-spinner></mat-spinner>
-        </div>
-      </mat-card>
-      } } }
+            <div class="details">
+              <a class="title-link" [routerLink]="['/anime', anime.mal_id]">
+                <h3 class="title">{{ anime.title }}</h3>
+              </a>
+
+              <div class="alternative-titles">
+                <p *ngIf="anime.title_japanese">{{ anime.title_japanese }}</p>
+                <p *ngIf="anime.title_english && anime.title_english !== anime.title">
+                  {{ anime.title_english }}
+                </p>
+              </div>
+
+              <div
+                class="synopsis-container"
+                [ngClass]="{ scrollable: anime.synopsis.length > 150 }"
+              >
+                <p class="synopsis">{{ anime.synopsis }}</p>
+              </div>
+            </div>
+            <mat-divider></mat-divider>
+            <mat-card-actions class="actions">
+              <div class="countdown">
+                <div class="countdown-text">
+                  Release:
+                  <span [ngStyle]="{ color: 'white' }">
+                    {{
+                      anime.aired.from ? countdownTimes[anime.mal_id] : "Unknown"
+                    }}
+                  </span>
+                </div>
+              </div>
+            </mat-card-actions>
+          </mat-card>
+        }
+      }
+      <!-- If loading, show skeleton loader cards -->
+      @else {
+        @if(loading) {
+          @for (_ of [1, 2, 3, 4, 5]; track _) {
+            <mat-card *ngFor="let _ of [1, 2, 3, 4, 5]" class="card">
+              <div class="spinner-container">
+                <mat-spinner></mat-spinner>
+              </div>
+            </mat-card>
+          }
+        }
+      }
     </div>
+    <!-- Paginator for navigating through the anime grid -->
     <mat-paginator
       [length]="pagination.items.total"
       [pageSize]="pagination.items.per_page"
@@ -74,7 +80,6 @@
       (page)="onPageChange($event)"
       [showFirstLastButtons]="true"
       [hidePageSize]="true"
-    >
-    </mat-paginator>
+    ></mat-paginator>
   </mat-card>
 </mat-card>

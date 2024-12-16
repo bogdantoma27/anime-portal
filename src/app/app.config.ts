@@ -60,7 +60,7 @@ export const appConfig: ApplicationConfig = {
     ),
     // CacheResolverService,
     // CacheInterceptorProvider,
-    // ErrorHandlerProvider,
-    // ErrorInterceptorProvider,
+    ErrorHandlerProvider,
+    ErrorInterceptorProvider,
   ],
 };

@@ -1,5 +1,5 @@
 import { Component, inject, ViewChild } from '@angular/core';
-import { Anime, AnimeResponse } from '../../../interface/anime.interface';
+import { Anime, AnimeResponse } from '../../interface/anime.interface';
 import { ApiService } from '../../service/api.service';
 import { CommonModule } from '@angular/common';
 import { AnimeService } from '../../service/anime.service';
@@ -21,7 +21,6 @@ import { MatSelectModule } from '@angular/material/select';
 import { RouterModule } from '@angular/router';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatBadgeModule } from '@angular/material/badge';
-import { SelectAllDirective } from '../../shared/directives/select-all.directive';
 import {
   MatPaginator,
   MatPaginatorModule,
@@ -30,6 +29,13 @@ import {
 import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
 import { YoutubeDialogComponent } from '../../components/youtube-dialog/youtube-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
+import {
+  ANIME_AVAILABLE_GENRES,
+  ANIME_MEDIA_OPTIONS,
+  ANIME_STATUS_OPTIONS,
+  ANIME_ORDER_OPTIONS,
+} from '../../interface/constants.interface.';
+import { OrderBy, SortOrder } from '../../enums/anime.enum';
 
 @Component({
   selector: 'app-anime',
@@ -47,7 +53,6 @@ import { MatDialog } from '@angular/material/dialog';
     ReactiveFormsModule,
     MatDividerModule,
     MatBadgeModule,
-    SelectAllDirective,
     MatPaginatorModule,
     NgxSkeletonLoaderModule,
   ],
@@ -55,93 +60,11 @@ import { MatDialog } from '@angular/material/dialog';
   styleUrl: './anime.component.scss',
 })
 export class AnimeComponent {
-  filters = {
-    q: '',
-    minScore: '',
-    maxScore: '',
-    type: '',
-    genres: [],
-    status: '',
-    orderBy: '',
-    sort: 'asc',
-  };
-
-  availableGenres = [
-    { id: 1, label: 'Action' },
-    { id: 2, label: 'Adventure' },
-    { id: 3, label: 'Cars' },
-    { id: 4, label: 'Comedy' },
-    { id: 5, label: 'Avante Garde' },
-    { id: 6, label: 'Demons' },
-    { id: 7, label: 'Mystery' },
-    { id: 8, label: 'Drama' },
-    { id: 9, label: 'Ecchi' },
-    { id: 10, label: 'Fantasy' },
-    { id: 11, label: 'Game' },
-    { id: 12, label: 'Hentai' },
-    { id: 13, label: 'Historical' },
-    { id: 14, label: 'Horror' },
-    { id: 15, label: 'Kids' },
-    { id: 17, label: 'Martial Arts' },
-    { id: 18, label: 'Mecha' },
-    { id: 19, label: 'Music' },
-    { id: 20, label: 'Parody' },
-    { id: 21, label: 'Samurai' },
-    { id: 22, label: 'Romance' },
-    { id: 23, label: 'School' },
-    { id: 24, label: 'Sci Fi' },
-    { id: 25, label: 'Shoujo' },
-    { id: 26, label: 'Girls Love' },
-    { id: 27, label: 'Shounen' },
-    { id: 28, label: 'Boys Love' },
-    { id: 29, label: 'Space' },
-    { id: 30, label: 'Sports' },
-    { id: 31, label: 'Super Power' },
-    { id: 32, label: 'Vampire' },
-    { id: 35, label: 'Harem' },
-    { id: 36, label: 'Slice Of Life' },
-    { id: 37, label: 'Supernatural' },
-    { id: 38, label: 'Military' },
-    { id: 39, label: 'Police' },
-    { id: 40, label: 'Psychological' },
-    { id: 41, label: 'Suspense' },
-    { id: 42, label: 'Seinen' },
-    { id: 43, label: 'Josei' },
-    { id: 46, label: 'Award Winning' },
-    { id: 47, label: 'Gourmet' },
-    { id: 48, label: 'Work Life' },
-    { id: 49, label: 'Erotica' },
-  ];
-
-  mediaOptions = [
-    { value: 'tv', label: 'TV' },
-    { value: 'movie', label: 'Movie' },
-    { value: 'ova', label: 'OVA' },
-    { value: 'special', label: 'Special' },
-    { value: 'ona', label: 'ONA' },
-    { value: 'music', label: 'Music' },
-  ];
-  statusOptions = [
-    { value: 'airing', label: 'Airing' },
-    { value: 'complete', label: 'Completed' },
-    { value: 'upcoming', label: 'Upcoming' },
-  ];
-  orderOptions = [
-    { value: 'title', label: 'Title' },
-    { value: 'start_date', label: 'Start Date' },
-    { value: 'end_date', label: 'End Date' },
-    { value: 'episodes', label: 'Episodes' },
-    { value: 'score', label: 'Score' },
-    { value: 'rank', label: 'Rank' },
-    { value: 'popularity', label: 'Popularity' },
-    { value: 'favorites', label: 'Favorites' },
-  ];
-
   filterForm: FormGroup;
-  filteredAnimes: any[] = [];
+  filteredAnimes: Anime[] = [];
   loading = false;
 
-  @ViewChild(MatPaginator) paginator!: MatPaginator; // Access paginator reference
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
 
   pagination = {
     last_visible_page: 1,
@@ -154,99 +77,113 @@ export class AnimeComponent {
     },
   };
 
-  private apiService = inject(ApiService);
+  availableGenres = ANIME_AVAILABLE_GENRES;
+  mediaOptions = ANIME_MEDIA_OPTIONS;
+  statusOptions = ANIME_STATUS_OPTIONS;
+  orderOptions = ANIME_ORDER_OPTIONS;
+
+  private animeService = inject(AnimeService);
   private fb = inject(FormBuilder);
   private dialog = inject(MatDialog);
 
   constructor() {
-    // Initialize the filter form
     this.filterForm = this.fb.group({
       q: [''],
       minScore: [''],
       maxScore: [''],
       type: [''],
-      genres: [''],
-      status: ['airing'],
-      orderBy: ['score'],
-      sort: ['desc'],
+      genres: [[]],
+      status: [''],
+      orderBy: [OrderBy.SCORE],
+      sort: [SortOrder.DESC],
     });
   }
 
-  ngOnInit() {
-    this.availableGenres.sort((a, b) => a.label.localeCompare(b.label));
-
-    // Listen for changes in the filter form and debounce input
-    this.filterForm.valueChanges
-      .pipe(debounceTime(500), distinctUntilChanged())
-      .subscribe(() => {
-        this.fetchAnimes();
-      });
-
-    // Initial data fetch
+  ngOnInit(): void {
+    this.initializeGenres();
+    this.setupFormSubscriptions();
     this.fetchAnimes();
   }
 
-  fetchAnimes(page: number = 1) {
-    this.loading = true;
+  private initializeGenres(): void {
+    this.availableGenres.sort((a, b) => a.label.localeCompare(b.label));
 
-    // Extract form values
+    // You may want to explicitly set availableGenres here if you're not binding it directly.
+    this.availableGenres = [...ANIME_AVAILABLE_GENRES];
+  }
+
+  private setupFormSubscriptions(): void {
+    this.filterForm.valueChanges
+      .pipe(debounceTime(500), distinctUntilChanged())
+      .subscribe(() => {
+        this.resetPagination();
+        this.fetchAnimes();
+      });
+  }
+
+  fetchAnimes(page: number = 1): void {
+    this.loading = true;
     const filters = this.filterForm.value;
 
-    // Dynamically build HttpParams by filtering out empty values
-    let params = Object.entries(filters).reduce((acc, [key, value]) => {
-      if (value) {
-        acc = acc.set(key, value.toString());
-      }
-      return acc;
-    }, new HttpParams());
+    // Refactor HttpParams construction with modern, concise logic
+    const params = new HttpParams({
+      fromObject: Object.fromEntries(
+        Object.entries(filters)
+          .filter(([_, value]) => value?.toString().trim()) // Filters out falsy and empty string values
+          .map(([key, value]) => [key, String(value)]) // Converts all values to strings
+      ),
+    })
+      .set('page', String(page))
+      .set('limit', String(this.pagination?.items?.per_page ?? 10)); // Default limit if pagination is undefined
 
-    // Add pagination parameters
-    params = params
-      .set('page', page.toString())
-      .set('limit', this.pagination.items.per_page.toString());
-
-    // API call
-    this.apiService.get<any>('/anime', { params }).subscribe((response) => {
-      console.log('API Response:', response);
-      this.filteredAnimes = response.data || [];
-      this.pagination = response.pagination; // Update pagination data
-      this.loading = false;
+    this.animeService.searchAnime(params).subscribe({
+      next: (response) => {
+        this.filteredAnimes = response.data || [];
+        this.pagination = response.pagination;
+      },
+      error: () => {
+        this.filteredAnimes = [];
+      },
+      complete: () => {
+        this.loading = false;
+      },
     });
   }
 
-  toggleSynopsis(anime: any, event: Event): void {
-    event.preventDefault(); // Prevent default anchor behavior
+  resetPagination(): void {
+    this.pagination = {
+      last_visible_page: 1,
+      has_next_page: true,
+      current_page: 1,
+      items: { count: 0, total: 0, per_page: 25 },
+    };
+  }
+
+  toggleSynopsis(anime: Anime): void {
     anime.showFullSynopsis = !anime.showFullSynopsis;
   }
 
-  // Getter to return all genre IDs in a flat array for the SelectAllDirective
-  get allGenres() {
-    return this.availableGenres.flat().map((g) => g.id);
+  getStudios(anime: Anime): string {
+    return anime.studios?.map((studio) => studio.name).join(', ') || 'N/A';
   }
 
-  // Handle paginator page change
+  getProducers(anime: Anime): string {
+    return (
+      anime.producers?.map((producer) => producer.name).join(', ') || 'N/A'
+    );
+  }
+
   onPageChange(event: PageEvent): void {
     this.pagination.items.per_page = event.pageSize;
     this.pagination.current_page = event.pageIndex + 1;
     this.fetchAnimes(this.pagination.current_page);
   }
 
-  playTrailer(season: any): void {
-    this.dialog.open(YoutubeDialogComponent, {
-      data: { videoId: season.trailer.youtube_id }, // Pass the video ID to the dialog
-      // width: '80%', // You can customize the width of the dialog as needed
-      // height: '80%', // You can customize the height as well
-    });
-  }
-
-  // Processed values for display in the template
-  getStudios(anime: any): string {
-    return anime.studios?.map((studio) => studio.name).join(', ') || 'N/A';
-  }
-
-  getProducers(anime: any): string {
-    return (
-      anime.producers?.map((producer) => producer.name).join(', ') || 'N/A'
-    );
+  playTrailer(anime: Anime): void {
+    if (anime.trailer?.youtube_id) {
+      this.dialog.open(YoutubeDialogComponent, {
+        data: { videoId: anime.trailer.youtube_id },
+      });
+    }
   }
 }
