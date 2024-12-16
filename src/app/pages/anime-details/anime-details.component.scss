@@ -272,3 +272,16 @@ mat-expansion-panel {
     }
   }
 }
+
+.loading-container {
+  position: fixed; /* Fixed position so it stays in the center */
+  top: 50%; /* Position it vertically in the center */
+  left: 50%; /* Position it horizontally in the center */
+  transform: translate(-50%, -50%); /* Adjust for perfect centering */
+  z-index: 1000; /* Ensure it is above other content */
+  width: 100vw; /* Take full width of viewport */
+  height: 100vh; /* Take full height of viewport */
+  display: flex;
+  justify-content: center; /* Horizontally center the spinner */
+  align-items: center; /* Vertically center the spinner */
+}

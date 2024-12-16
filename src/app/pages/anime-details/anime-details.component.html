@@ -1,4 +1,9 @@
-@if(anime) {
+@if(isLoading) {
+  <!-- Display spinner if anime data is not loaded yet -->
+  <div class="loading-container">
+    <mat-spinner diameter="100"></mat-spinner>
+  </div>
+} @else {
   <div class="anime-details-container mat-elevation-z8">
     <div class="header d-flex flex-wrap p-3 rounded shadow">
       <!-- Left Side: Image, Title, and Details -->
