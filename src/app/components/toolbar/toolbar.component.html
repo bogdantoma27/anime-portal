@@ -4,10 +4,27 @@
   <!-- Vertical Divider -->
   <mat-divider class="vertical-divider"></mat-divider>
 
+  <!-- Anime Menu with Icon After Text -->
+  <button mat-button [matMenuTriggerFor]="animeMenu">
+    Anime <mat-icon iconPositionEnd>arrow_drop_down</mat-icon>
+  </button>
+  <mat-menu #animeMenu="matMenu">
+    <button mat-menu-item routerLink="/anime">Filter Anime</button>
+    <button mat-menu-item routerLink="/top-anime">Top Rated</button>
+    <button mat-menu-item routerLink="/upcoming-anime">Top Upcoming</button>
+  </mat-menu>
+
+  <!-- Manga Menu with Icon After Text -->
+  <button mat-button [matMenuTriggerFor]="mangaMenu">
+    Manga <mat-icon iconPositionEnd>arrow_drop_down</mat-icon>
+  </button>
+  <mat-menu #mangaMenu="matMenu">
+    <button mat-menu-item routerLink="/manga">Filter Manga</button>
+    <button mat-menu-item routerLink="/manga-read">Manga Reader</button>
+  </mat-menu>
+
+  <!-- Other Menu Items -->
   <button mat-button routerLink="/season">Season</button>
-  <button mat-button routerLink="/anime">Anime</button>
-  <button mat-button routerLink="/manga">Manga</button>
-  <button mat-button routerLink="/manga-read">Reader</button>
 
   <span class="spacer"></span>
   <!-- <app-theme-toggle></app-theme-toggle> -->

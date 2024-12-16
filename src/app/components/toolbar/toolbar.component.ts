@@ -4,12 +4,12 @@ import { RouterModule } from '@angular/router';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { ThemeToggleComponent } from "../../shared/components/theme-toggle/theme-toggle.component";
 import { MatDividerModule } from '@angular/material/divider';
+import { MatMenuModule } from '@angular/material/menu';
 
 @Component({
   selector: 'app-toolbar',
-  imports: [CommonModule, MatToolbarModule, MatButtonModule, MatIconModule, RouterModule, MatDividerModule],
+  imports: [CommonModule, MatToolbarModule, MatButtonModule, MatIconModule, RouterModule, MatDividerModule, MatMenuModule],
   templateUrl: './toolbar.component.html',
   styleUrl: './toolbar.component.scss',
 })
