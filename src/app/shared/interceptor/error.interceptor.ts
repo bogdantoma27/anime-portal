@@ -15,7 +15,7 @@ export class ErrorInterceptor implements HttpInterceptor {
   private errorHandlerService = inject(ErrorHandlerService);
   private spinnerService: NgxSpinnerService = inject(NgxSpinnerService);
   private maxRetryAttempts = 3;
-  private retryDelayMs = 2000;
+  private retryDelayMs = 1500;
 
   intercept(request: HttpRequest<any>, next: HttpHandler) {
     this.showLoader();

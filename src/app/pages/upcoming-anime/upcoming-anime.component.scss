@@ -25,7 +25,7 @@
 .details {
   display: flex;
   flex-direction: column;
-  flex-grow: 1; /* This ensures the content area takes up the available space */
+  // flex-grow: 1; /* This ensures the content area takes up the available space */
 }
 
 .synopsis-container {
@@ -33,7 +33,7 @@
 }
 
 .title {
-  min-height: 0 !important; /* Reset the min-height to allow the title to shrink */
+  min-height: 75px !important;
 }
 
 .actions {

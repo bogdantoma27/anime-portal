@@ -1,12 +1,13 @@
 <mat-card class="filter-card">
-  <mat-card-header class="interactive-header" (click)="toggleGrid()">
+  <mat-card-header (click)="toggleGrid()">
     <div class="header-content">
-      <mat-icon class="me-3">{{ isGridVisible ? "expand_less" : "expand_more" }}</mat-icon>
-      Upcoming Anime
+      <mat-icon>{{ isGridVisible ? 'expand_less' : 'expand_more' }}</mat-icon>
     </div>
+    <mat-card-title class="ms-5"> Upcoming Anime</mat-card-title>
   </mat-card-header>
+</mat-card>
 
-  <mat-card *ngIf="isGridVisible">
+@if (isGridVisible) {
     <div class="grid">
       <!-- If not loading, show anime cards -->
       @if (!loading) {
@@ -25,19 +26,29 @@
             </div>
             <div class="details">
               <a class="title-link" [routerLink]="['/anime', anime.mal_id]">
-                <h3 class="title">{{ anime.title }}</h3>
+                <h3 class="title">{{ anime.title }}
+                  <div class="alternative-titles">
+                    <p *ngIf="anime.title_japanese">{{ anime.title_japanese }}</p>
+                  </div>
+                </h3>
               </a>
 
-              <div class="alternative-titles">
-                <p *ngIf="anime.title_japanese">{{ anime.title_japanese }}</p>
-                <p *ngIf="anime.title_english && anime.title_english !== anime.title">
-                  {{ anime.title_english }}
-                </p>
-              </div>
+
+              <ul class="info">
+                <li><mat-icon>tv</mat-icon> <strong>Type:</strong> {{ anime?.type || 'N/A' }}</li>
+                <li><mat-icon>info</mat-icon> <strong>Status:</strong> {{ anime.status || 'N/A' }}</li>
+                <li><mat-icon>event</mat-icon> <strong>Airing:</strong> {{anime.aired?.string || 'N/A' }}</li>
+                <li><mat-icon>stars</mat-icon> <strong>Rating:</strong> {{anime.rating || 'N/A' }}</li>
+                <li><mat-icon>score</mat-icon> <strong>Popularity:</strong> {{anime.popularity || 'N/A' }}</li>
+                <li><mat-icon>group</mat-icon> <strong>Members:</strong> {{anime.members || 'N/A' }}</li>
+                <li><mat-icon>favorite</mat-icon> <strong>Favorites:</strong> {{anime.favorites || 'N/A' }}</li>
+                <li><mat-icon>beach_access</mat-icon> <strong>Season:</strong> {{(anime.season | titlecase) || 'N/A' }}</li>
+                <li><mat-icon>broadcast_on_personal</mat-icon> <strong>Broadcast:</strong> {{anime.broadcast?.string || 'N/A' }}</li>
+              </ul>
 
               <div
                 class="synopsis-container"
-                [ngClass]="{ scrollable: anime.synopsis.length > 150 }"
+                [ngClass]="{ scrollable: anime.synopsis?.length > 150 }"
               >
                 <p class="synopsis">{{ anime.synopsis }}</p>
               </div>
@@ -81,5 +92,5 @@
       [showFirstLastButtons]="true"
       [hidePageSize]="true"
     ></mat-paginator>
-  </mat-card>
-</mat-card>
+}
+

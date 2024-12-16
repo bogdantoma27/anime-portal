@@ -7,3 +7,11 @@
   margin: 0 5px; /* Add some spacing on the sides if needed */
   border-left: 1px solid rgba(255, 255, 255, 0.5); /* Customize color and thickness */
 }
+
+.mat-mdc-button:has(.material-icons, mat-icon, [matButtonIcon]) {
+  padding: 12px;
+}
+
+.mat-mdc-menu-item {
+  text-align: center;
+}

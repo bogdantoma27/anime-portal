@@ -5,7 +5,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatChipsModule } from '@angular/material/chips';
-import { forkJoin } from 'rxjs';
+import { delayWhen, forkJoin, Observable } from 'rxjs';
 import { ToasterService } from '../../shared/service/toaster.service';
 import { AnimeService } from '../../service/anime.service';
 import { MatCardModule } from '@angular/material/card';
@@ -17,6 +17,7 @@ import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-anime-details',
+  standalone: true,
   imports: [
     CommonModule,
     MatDividerModule,
@@ -37,63 +38,60 @@ export class AnimeDetailsComponent {
   private route = inject(ActivatedRoute);
   private dialog = inject(MatDialog);
   private toasterService = inject(ToasterService);
+
   @Input() anime: any = {}; // Initialize as an empty object
   isLoading = true;
 
   constructor() {}
 
   ngOnInit(): void {
-    // Use snapshot to load anime on initial load
-    const animeId = this.route.snapshot.paramMap.get('id');
-    if (animeId) {
-      this.loadAnimeDetails(Number(animeId));
-    } else {
-      this.toasterService.error('Anime not found.');
-    }
-
     // Subscribe to dynamic route changes
     this.route.params.subscribe((params) => {
-      const animeId = +params['id']; // Ensure it's a number
-      this.loadAnimeDetails(animeId);
+      const animeId = Number(params['id']); // Convert to number
+      if (animeId) {
+        this.loadAnimeDetails(animeId);
 
-      // Scroll to the top of the page
-      window.scrollTo(0, 0);
+        // Scroll to the top of the page on route change
+        window.scrollTo(0, 0);
+      } else {
+        this.toasterService.error('Anime not found.');
+      }
     });
   }
 
+  // Method to load anime details with a 200ms delay between each API call
   loadAnimeDetails(animeId: number): void {
     this.isLoading = true;
 
-    // Fetching anime details and related data using forkJoin
+    // Create delayed observables
+    const delayedAnimeDetails$ = this.fetchWithDelay(this.animeService.getAnimeById(animeId), 200);
+    const delayedCharacters$ = this.fetchWithDelay(this.animeService.getAnimeCharacters(animeId), 200);
+    const delayedStaff$ = this.fetchWithDelay(this.animeService.getAnimeStatistics(animeId), 200);
+    const delayedReviews$ = this.fetchWithDelay(this.animeService.getAnimeReviews(animeId), 200);
+    const delayedStreams$ = this.fetchWithDelay(this.animeService.getAnimeStreamingLinks(animeId), 200);
+
+    // Fetching anime details and related data using forkJoin with delay
     forkJoin({
-      animeDetails: this.animeService.getAnimeById(animeId),
-      characters: this.animeService.getAnimeCharacters(animeId),
-      staff: this.animeService.getAnimeStatistics(animeId),
-      reviews: this.animeService.getAnimeReviews(animeId),
+      animeDetails: delayedAnimeDetails$,
+      characters: delayedCharacters$,
+      staff: delayedStaff$,
+      reviews: delayedReviews$,
+      streams: delayedStreams$,
     }).subscribe({
-      next: ({ animeDetails, characters, staff, reviews }) => {
+      next: ({ animeDetails, characters, staff, reviews, streams }) => {
         // Storing fetched data
         this.anime = {
           ...animeDetails,
           characters,
           staff,
           reviews,
+          streams,
         };
 
-        // Extracting genre IDs from animeDetails for the search API
-        const genreIds = animeDetails.data?.genres?.map(
-          (genre) => genre.mal_id
-        );
+        // Fetch recommendations based on genre IDs
+        const genreIds = animeDetails.data?.genres?.map((genre) => genre.mal_id);
         if (genreIds?.length) {
-          const params = { genres: genreIds.join(',') }; // Format genre IDs as a comma-separated string
-          this.animeService.searchAnime(params).subscribe({
-            next: (searchResults) => {
-              this.anime.recommendations = searchResults.data; // Assuming 'data' contains recommendations
-            },
-            error: (error) => {
-              console.error('Failed to fetch recommendations:', error);
-            },
-          });
+          this.fetchRecommendations(genreIds);
         } else {
           this.anime.recommendations = [];
         }
@@ -103,6 +101,40 @@ export class AnimeDetailsComponent {
       error: () => {
         this.toasterService.error('Failed to load anime details.');
         this.isLoading = false;
+      },
+    });
+  }
+
+  // Utility function to simulate delay before returning an observable
+  private fetchWithDelay(observableFn: Observable<any>, delayMs = 200): Observable<any> {
+    return observableFn.pipe(
+      delayWhen(() => this.delay(delayMs)) // Add delay to each observable
+    );
+  }
+
+  // Simple delay function returning an observable after the specified delay
+  private delay(ms: number): Observable<void> {
+    return new Observable<void>((observer) => {
+      const timeout = setTimeout(() => {
+        observer.next();
+        observer.complete(); // Ensure the observable completes after the delay
+      }, ms);
+
+      // Cleanup the timeout when unsubscribed from
+      return () => clearTimeout(timeout);
+    });
+  }
+
+
+  fetchRecommendations(genreIds: number[]): void {
+    const params = { genres: genreIds.join(',') }; // Format genre IDs as a comma-separated string
+    this.animeService.searchAnime(params).subscribe({
+      next: (searchResults) => {
+        this.anime.recommendations = searchResults.data; // Assuming 'data' contains recommendations
+      },
+      error: (error) => {
+        console.error('Failed to fetch recommendations:', error);
+        this.anime.recommendations = [];
       },
     });
   }
@@ -142,22 +174,27 @@ export class AnimeDetailsComponent {
     );
   }
 
-  // Method to toggle the full review visibility
-  toggleReview(review: any): void {
-    review.showFullReview = !review.showFullReview;
+  getFormattedStreamingLinks(): string {
+    return (
+      this.anime?.streams?.data
+        ?.map((stream) => {
+          // Check if both name and url are available
+          if (stream.name && stream.url) {
+            // Format name with hyperlink in parentheses
+            return `<a href="${stream.url}" target="_blank">${stream.name}</a>`;
+          }
+          return stream.name ?? 'N/A'; // Fallback to 'N/A' if name is missing
+        })
+        .join(', ') ?? 'N/A' // Join multiple links with commas
+    );
   }
 
-  // Function to get reactions and their corresponding icons
   getReactions(reactions: any) {
     return [
       { label: 'Overall', icon: 'check' },
       { label: 'Confusing', icon: 'thumb_down' },
-      // { label: 'Creating', icon: 'create' },
-      // { label: 'Funny', icon: 'sentiment_very_satisfied' },
-      // { label: 'Informative', icon: 'info' },
       { label: 'Love It', icon: 'favorite' },
       { label: 'Nice', icon: 'thumb_up_alt' },
-      // { label: 'Well Written', icon: 'edit' },
     ].filter((reaction) => reactions[reaction.label.toLowerCase()] > 0);
   }
 }

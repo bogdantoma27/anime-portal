@@ -1,0 +1,18 @@
+@use "../top-anime/top-anime.component.scss" as topAnime;
+
+/* Additional styles for filters */
+.filter-card {
+  margin-bottom: 20px;
+  padding: 20px;
+  background-color: #2b2b36;
+  border-radius: 0;
+  cursor: pointer;
+  color: white;
+}
+
+.header-content {
+  mat-icon {
+    color: #ffcc00;
+  }
+  position: absolute;
+}

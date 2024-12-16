@@ -13,6 +13,7 @@ import { RouterModule } from '@angular/router';
 import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
 import { CountdownModule } from 'ngx-countdown'; // Use ngx-countdown for the timer
 import { CommonModule } from '@angular/common';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-upcoming-anime',
@@ -38,7 +39,7 @@ export class UpcomingAnimeComponent {
   isGridVisible = true; // Track visibility of the anime grid
   countdownTimes: { [key: number]: string } = {}; // Store countdown strings for each anime
   private timerInterval: any;
-  filteredAnimes = []; // Store the filtered anime data
+  filteredAnimes: any[] = []; // Store the filtered anime data
   loading = false; // Loading state for data
   pagination = {
     last_visible_page: 1,
@@ -53,6 +54,7 @@ export class UpcomingAnimeComponent {
 
   private apiService = inject(ApiService);
   private dialog = inject(MatDialog);
+  private subscription: Subscription = new Subscription();
 
   ngOnInit() {
     this.fetchAnimes(); // Fetch the anime data on component init
@@ -62,20 +64,38 @@ export class UpcomingAnimeComponent {
   // Fetch anime data from the API
   fetchAnimes(page: number = 1) {
     this.loading = true;
-    this.apiService
+    const apiSubscription = this.apiService
       .get<any>(`/seasons/upcoming?filter=tv&limit=20&page=${page.toString()}`)
-      .subscribe(
-        (response) => {
-          this.filteredAnimes = response.data || [];
+      .subscribe({
+        next: (response) => {
+          // Sort the anime data by release date
+          this.filteredAnimes = this.sortAnimesByReleaseDate(response.data || []);
           this.initializeCountdowns(); // Initialize countdowns once data is fetched
           this.pagination = response.pagination;
           this.loading = false;
         },
-        (error) => {
+        error: (error) => {
           console.error('Error fetching anime data', error);
           this.loading = false;
+        },
+        complete: () => {
+          console.log('Anime data fetching complete.');
         }
-      );
+      });
+
+    // Add the subscription to the list of active subscriptions for later unsubscription
+    this.subscription.add(apiSubscription);
+  }
+
+  // Sort the anime list by release date (closest date first, unknown dates last)
+  sortAnimesByReleaseDate(animes: any[]): any[] {
+    return animes.sort((a, b) => {
+      const dateA = a.aired?.from ? new Date(a.aired.from).getTime() : Infinity;
+      const dateB = b.aired?.from ? new Date(b.aired.from).getTime() : Infinity;
+
+      // Sort by date, with unknown dates (Infinity) at the end
+      return dateA - dateB;
+    });
   }
 
   // Handle pagination page change
@@ -154,5 +174,6 @@ export class UpcomingAnimeComponent {
 
   ngOnDestroy() {
     clearInterval(this.timerInterval); // Clear interval on component destroy
+    this.subscription.unsubscribe(); // Unsubscribe from all observables on destroy
   }
 }

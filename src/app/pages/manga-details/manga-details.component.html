@@ -1,4 +1,4 @@
-@if(anime) {
+@if(manga) {
   <div class="anime-details-container mat-elevation-z8">
     <div class="header d-flex flex-wrap p-3 rounded shadow">
       <!-- Left Side: Image, Title, and Details -->
@@ -7,33 +7,27 @@
           <mat-card-header>
             <img
               mat-card-image
-              [src]="anime?.data?.images?.jpg?.large_image_url"
-              alt="{{ anime?.data?.title }}"
+              [src]="manga?.data?.images?.jpg?.large_image_url"
+              alt="{{ manga?.data?.title }}"
               class="anime-poster"
             />
           </mat-card-header>
           <mat-card-content>
-            @if(anime?.data?.title_english) {
-            <h3 class="title mt-3 mb-3">{{ anime?.data?.title_english }}</h3>
+            @if(manga?.data?.title_english) {
+            <h3 class="title mt-3 mb-3">{{ manga?.data?.title_english }}</h3>
             } @else {
-            <h3 class="title mt-3 mb-3">{{ anime?.data?.title_japanese }}</h3>
+            <h3 class="title mt-3 mb-3">{{ manga?.data?.title_japanese }}</h3>
             }
-            <div class="genre-container mb-4" [hidden]="!anime?.data?.genres">
+            <div class="genre-container mb-4" [hidden]="!manga?.data?.genres">
               <div class="chip-list">
-                @for(genre of anime?.data?.genres; track $index) {
+                @for(genre of manga?.data?.genres; track $index) {
                 <span class="genre-chip">{{ genre?.name }}</span>
                 }
               </div>
             </div>
             <div class="anime-details-additional mt-3">
-              <p><strong>Japanese:</strong> {{ anime?.data?.title_japanese }}</p>
-              <p>
-                <strong>Trailer:</strong>
-                <button mat-button (click)="playTrailer(anime)" class="trailer">
-                  Youtube <mat-icon>play_circle_filled</mat-icon>
-                </button>
-              </p>
-              <a [href]="anime?.data?.url" target="_blank" class="mal-link"
+              <p><strong>Japanese:</strong> {{ manga?.data?.title_japanese }}</p>
+              <a [href]="manga?.data?.url" target="_blank" class="mal-link"
                 >View on MyAnimeList</a
               >
             </div>
@@ -48,7 +42,7 @@
             <mat-card-title>Synopsis</mat-card-title>
           </mat-card-header>
           <mat-card-content>
-            <p>{{ anime?.data?.synopsis }}</p>
+            <p>{{ manga?.data?.synopsis }}</p>
           </mat-card-content>
         </mat-card>
 
@@ -58,73 +52,65 @@
           </mat-card-header>
           <mat-card-content>
             <div class="stat-item">
-              <strong>Score:</strong> {{ anime?.data?.score || 'N/A' }}
+              <strong>Score:</strong> {{ manga?.data?.score || 'N/A' }}
             </div>
             <div class="stat-item">
-              <strong>Rank:</strong> {{ anime?.data?.rank || 'N/A' }}
+              <strong>Rank:</strong> {{ manga?.data?.rank || 'N/A' }}
             </div>
             <div class="stat-item">
-              <strong>Popularity:</strong> #{{ anime?.data?.popularity || 'N/A' }}
+              <strong>Popularity:</strong> #{{ manga?.data?.popularity || 'N/A' }}
             </div>
             <div class="stat-item">
-              <strong>Members:</strong> {{ anime?.data?.members || 'N/A' }}
+              <strong>Members:</strong> {{ manga?.data?.members || 'N/A' }}
             </div>
             <div class="stat-item">
-              <strong>Favorites:</strong> {{ anime?.data?.favorites || 'N/A' }}
+              <strong>Favorites:</strong> {{ manga?.data?.favorites || 'N/A' }}
             </div>
           </mat-card-content>
         </mat-card>
 
         <mat-card>
           <mat-card-header>
-            <mat-card-title>Airing Time</mat-card-title>
+            <mat-card-title>Information</mat-card-title>
           </mat-card-header>
           <mat-card-content>
             <div class="stat-item">
-              <strong>Season:</strong> {{ anime?.data?.season || 'N/A' }}
+              <strong>Published:</strong> {{ manga?.data?.published.string || 'N/A'  }}
             </div>
             <div class="stat-item">
-              <strong>Airing:</strong> {{ anime?.data?.aired?.string || 'N/A' }}
+              <strong>Status:</strong> {{ manga?.data?.status || 'N/A'  }}
             </div>
             <div class="stat-item">
-              <strong>Duration:</strong> {{ anime?.data?.duration || 'N/A' }}
+              <strong>Chapters:</strong> {{ manga?.data?.chapters || 'N/A'  }}
             </div>
             <div class="stat-item">
-              <strong>Episodes:</strong> {{ anime?.data?.episodes || 'N/A' }}
+              <strong>Volumes:</strong> {{ manga?.data?.volumes || 'N/A'  }}
+            </div>
+            <div class="stat-item">
+              <strong>Authors:</strong> <span class="ms-1" [innerHTML]="getFormattedAuthors() || 'N/A'"></span>
             </div>
           </mat-card-content>
         </mat-card>
 
         <mat-card>
           <mat-card-header>
-            <mat-card-title>Studios & Producers</mat-card-title>
+            <mat-card-title>Background</mat-card-title>
           </mat-card-header>
           <mat-card-content>
-            <div class="stat-item">
-              <strong>Studios:</strong> {{ getFormattedStudios() || 'N/A'  }}
-            </div>
-            <div class="stat-item">
-              <strong>Producers:</strong> {{ getFormattedProducers() || 'N/A'  }}
-            </div>
-            <div class="stat-item">
-              <strong>Streaming:</strong>  <span class="ms-1" [innerHTML]="getFormattedStreamingLinks() || 'N/A'"></span>
-            </div>
-            <div class="stat-item">
-              <strong>Licensors:</strong> {{ getFormattedLicensors() || 'N/A'  }}
-            </div>
+            <p>{{ manga?.data?.background }} </p>
           </mat-card-content>
         </mat-card>
       </div>
     </div>
 
     <div class="expansion-panels">
-      @if(anime?.staff?.data?.length) {
+      @if(manga?.staff?.data?.length) {
       <mat-expansion-panel>
         <mat-expansion-panel-header>
           <mat-panel-title>Staff</mat-panel-title>
         </mat-expansion-panel-header>
         <mat-list>
-          @for(staff of anime?.staff?.data; track $index) {
+          @for(staff of manga?.staff?.data; track $index) {
           <mat-list-item>
             <a [href]="staff?.person?.url" target="_blank">
               <img
@@ -139,27 +125,27 @@
           }
         </mat-list>
       </mat-expansion-panel>
-      } @if(anime?.data?.theme?.openings?.length) {
+      } @if(manga?.data?.theme?.openings?.length) {
       <mat-expansion-panel>
         <mat-expansion-panel-header>
           <mat-panel-title>Opening Theme</mat-panel-title>
         </mat-expansion-panel-header>
-        <mat-card-content>{{ anime?.data?.theme?.openings?.join(', ') }}</mat-card-content>
+        <mat-card-content>{{ manga?.data?.theme?.openings?.join(', ') }}</mat-card-content>
       </mat-expansion-panel>
-      } @if(anime?.data?.theme?.endings?.length) {
+      } @if(manga?.data?.theme?.endings?.length) {
       <mat-expansion-panel>
         <mat-expansion-panel-header>
           <mat-panel-title>Ending Theme</mat-panel-title>
         </mat-expansion-panel-header>
-        <mat-card-content>{{ anime?.data?.theme?.endings?.join(', ') }}</mat-card-content>
+        <mat-card-content>{{ manga?.data?.theme?.endings?.join(', ') }}</mat-card-content>
       </mat-expansion-panel>
-      } @if(anime?.characters?.data?.length) {
+      } @if(manga?.characters?.data?.length) {
       <mat-expansion-panel expanded>
         <mat-expansion-panel-header>
           <mat-panel-title>Characters</mat-panel-title>
         </mat-expansion-panel-header>
         <div class="character-list row">
-          @for(character of anime?.characters?.data; track $index) {
+          @for(character of manga?.characters?.data; track $index) {
           <div class="character-card col-6 col-sm-4 col-md-3 mb-4">
             <img
               [src]="character?.character?.images?.jpg?.image_url"
@@ -174,7 +160,7 @@
           }
         </div>
       </mat-expansion-panel>
-      } @if(anime?.reviews?.data?.length) {
+      } @if(manga?.reviews?.data?.length) {
       <mat-expansion-panel expanded>
         <mat-expansion-panel-header>
           <mat-panel-title>Latest Reviews</mat-panel-title>
@@ -182,7 +168,7 @@
 
         <!-- Carousel for displaying reviews -->
         <div>
-          <div class="row" *ngFor="let review of anime?.reviews?.data">
+          <div class="row" *ngFor="let review of manga?.reviews?.data">
             <div class="col-12 mb-4">
               <mat-card class="review-card">
                 <mat-card-header>
@@ -237,20 +223,20 @@
           </div>
         </div>
       </mat-expansion-panel>
-      } @if (anime?.recommendations?.length) {
+      } @if (manga?.recommendations?.length) {
       <mat-expansion-panel expanded>
         <mat-expansion-panel-header>
           <mat-panel-title>More Like This</mat-panel-title>
         </mat-expansion-panel-header>
         <div class="recommendation-list row">
-          @for(recommendation of anime?.recommendations; track $index) {
+          @for(recommendation of manga?.recommendations; track $index) {
           <div class="recommendation-card col-6 col-sm-4 col-md-3 mb-4">
             <img
               [src]="recommendation?.images?.jpg?.image_url"
               alt="{{ recommendation?.title }}"
               class="recommendation-image"
             />
-            <a class="recommendation-name" [routerLink]="['/anime', recommendation?.mal_id]">
+            <a class="recommendation-name" [routerLink]="['/manga', recommendation?.mal_id]">
               {{ recommendation?.title }}
             </a>
           </div>

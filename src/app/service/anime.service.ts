@@ -43,42 +43,46 @@ export class AnimeService {
       ? params
       : new HttpParams({ fromObject: params });
 
-    return this.retryOnRateLimit(this.api.get<any>('/anime', { params: httpParams }));
+    return this.api.get<any>('/anime', { params: httpParams });
   }
 
   getAnimePictures(id: number): Observable<any> {
-    return this.retryOnRateLimit(this.api.get(`/anime/${id}/pictures`));
+    return this.api.get(`/anime/${id}/pictures`);
   }
 
   getAnimeCharacters(id: number): Observable<any> {
-    return this.retryOnRateLimit(this.api.get(`/anime/${id}/characters`));
+    return this.api.get(`/anime/${id}/characters`);
   }
 
   getAnimeEpisodes(id: number): Observable<any> {
-    return this.retryOnRateLimit(this.api.get(`/anime/${id}/episodes`));
+    return this.api.get(`/anime/${id}/episodes`);
   }
 
   getAnimeNews(id: number): Observable<any> {
-    return this.retryOnRateLimit(this.api.get(`/anime/${id}/news`));
+    return this.api.get(`/anime/${id}/news`);
   }
 
   getAnimeForum(id: number): Observable<any> {
-    return this.retryOnRateLimit(this.api.get(`/anime/${id}/forum`));
+    return this.api.get(`/anime/${id}/forum`);
   }
 
   getAnimeVideos(id: number): Observable<any> {
-    return this.retryOnRateLimit(this.api.get(`/anime/${id}/videos`));
+    return this.api.get(`/anime/${id}/videos`);
   }
 
   getAnimeStatistics(id: number): Observable<any> {
-    return this.retryOnRateLimit(this.api.get(`/anime/${id}/statistics`));
+    return this.api.get(`/anime/${id}/statistics`);
   }
 
   getAnimeRecommendations(id: number): Observable<any> {
-    return this.retryOnRateLimit(this.api.get(`/anime/${id}/recommendations`));
+    return this.api.get(`/anime/${id}/recommendations`);
   }
 
   getAnimeReviews(id: number): Observable<any> {
     return this.api.get(`/anime/${id}/reviews`);
+  }
+
+  getAnimeStreamingLinks(id: number): Observable<any> {
+    return this.api.get(`/anime/${id}/streaming`);
   }
 }
