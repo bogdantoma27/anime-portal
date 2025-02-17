@@ -1,0 +1,31 @@
+@use "@angular/material" as mat;
+@include mat.core();
+
+html {
+  // Default to light mode
+  color-scheme: light;
+  @include mat.theme(
+    (
+      color: (
+        theme-type: light,
+        primary: mat.$azure-palette,
+      ),
+      typography: 'Inter, "Helvetica Neue", sans-serif',
+      density: -1,
+    )
+  );
+}
+
+// material tailwind fixes (I found just 2 things, outline form field and mat-icon-button)
+.mdc-notched-outline__notch {
+  border-style: none;
+}
+
+.mat-mdc-icon-button {
+  line-height: normal !important;
+}
+
+// fix datepicker icon not showing
+.mat-mdc-input-element::-webkit-calendar-picker-indicator {
+  display: block !important;
+}
