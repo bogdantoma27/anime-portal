@@ -54,10 +54,10 @@ import { MatDialog } from "@angular/material/dialog";
         <div class="absolute inset-0">
           <img
             [src]="animeDetails()!.data.images.jpg?.large_image_url"
-            class="absolute inset-0 w-full lg:h-[575px] sm:h-[650px] md:h-[650px] object-cover z-0"
+            class="absolute inset-0 w-full lg:h-[575px] sm:h-[650px] md:h-[650px] mm:h-[935px] object-cover z-0"
           />
           <div
-            class="absolute inset-0 bg-black/60 backdrop-blur-sm lg:h-[575px] sm:h-[650px] md:h-[650px] mm:h-[800px]"
+            class="absolute inset-0 bg-black/60 backdrop-blur-sm lg:h-[575px] sm:h-[650px] md:h-[650px] mm:h-[935px]"
           ></div>
         </div>
 
@@ -224,10 +224,12 @@ import { MatDialog } from "@angular/material/dialog";
         ></app-generic-carousel>
 
         <!-- Mobile Pagination Text -->
+        @if (!(reviews()?.data)) {
         <div class="md:hidden text-center mt-4 text-gray-400">
           Page {{ reviewCarousel.currentPage + 1 }} of
           {{ reviewCarousel.getMaxPages() + 1 }}
         </div>
+        }
 
         <!-- Desktop Dots -->
         <div class="hidden md:flex justify-center mt-4 space-x-2">
@@ -260,10 +262,12 @@ import { MatDialog } from "@angular/material/dialog";
         ></app-generic-carousel>
 
         <!-- Mobile Pagination Text -->
+        @if (!(recommendations()?.data)) {
         <div class="md:hidden text-center mt-4 text-gray-400">
           Page {{ recommendationCarousel.currentPage + 1 }} of
           {{ recommendationCarousel.getMaxPages() + 1 }}
         </div>
+        }
 
         <!-- Desktop Dots -->
         <div class="hidden md:flex justify-center mt-4 space-x-2">
