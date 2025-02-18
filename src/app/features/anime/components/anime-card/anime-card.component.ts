@@ -179,6 +179,12 @@ export class AnimeCardComponent {
   private sanitizer = inject(DomSanitizer);
 
   navigateToAnimeDetails() {
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: 'smooth'
+    });
+
     this.router.navigate(["/anime", this.anime().mal_id], {
       queryParams: { title: this.anime().title },
     });

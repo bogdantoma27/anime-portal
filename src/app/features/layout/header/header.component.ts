@@ -428,6 +428,11 @@ export class HeaderComponent {
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
         // console.log("Selected Anime:", result);
+        window.scrollTo({
+          top: 0,
+          left: 0,
+          behavior: 'smooth'
+        });
         this.router.navigate(["/anime", result.mal_id]);
       }
     });

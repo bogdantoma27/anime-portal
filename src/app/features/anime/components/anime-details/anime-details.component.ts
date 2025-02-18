@@ -49,8 +49,7 @@ import { MatDialog } from "@angular/material/dialog";
 
       <!-- Anime Details Content -->
       @if(!isMainLoading() && animeDetails()) {
-      <div className="relative">
-        <!-- Full Width Background Image with Blur -->
+      <!-- <div className="relative">
         <div class="absolute inset-0">
           <img
             [src]="animeDetails()!.data.images.jpg?.large_image_url"
@@ -64,6 +63,22 @@ import { MatDialog } from "@angular/material/dialog";
         <div class="container mx-auto px-4 relative z-20 pt-6 pb-16">
           <div
             class="flex flex-col md:flex-row space-y-6 md:space-y-0 md:space-x-8"
+          > -->
+      <div class="relative">
+        <!-- Full Width Background Image with Blur -->
+        <div class="absolute -inset-x-6 -top-12 bottom-0 overflow-hidden">
+          <img
+            [src]="animeDetails()!.data.images.jpg?.large_image_url"
+            class="absolute inset-0 w-full min-h-[1100px] sm:min-h-[1200px] md:min-h-[900px] object-cover z-0"
+          />
+          <div
+            class="absolute inset-0 bg-black/60 backdrop-blur-sm min-h-[1100px] sm:min-h-[1200px] md:min-h-[900px]"
+          ></div>
+        </div>
+
+        <div class="container mx-auto px-4 relative z-20 pt-6 pb-16">
+          <div
+            class="flex flex-col md:flex-row space-y-6 md:space-y-0 md:space-x-8 relative z-30"
           >
             <!-- Poster -->
             <img
@@ -691,6 +706,12 @@ export class AnimeDetailsComponent implements OnInit {
   }
 
   navigateToRecommendation(recommendationId: number, title: string) {
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: 'smooth'
+    });
+
     // Force a complete route reload
     this.router.navigateByUrl("/", { skipLocationChange: true }).then(() => {
       this.router.navigate(["/anime", recommendationId], {

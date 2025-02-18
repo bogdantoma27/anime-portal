@@ -194,6 +194,12 @@ export class CharacterCardComponent {
   }
 
   navigateToCharacterDetails() {
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: 'smooth'
+    });
+
     this.router.navigate(["/character", this.mal_id], {
       queryParams: { name: this.name },
     });
