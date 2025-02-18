@@ -30,11 +30,11 @@ import { Component, OnInit, HostListener } from "@angular/core";
 })
 export class FooterComponent implements OnInit {
   currentYear = new Date().getFullYear();
-  showFooter = true;
+  showFooter = false;
 
   ngOnInit() {
-    // Check initial position
-    this.checkScrollPosition();
+    // Delay initial check to ensure content is loaded
+    setTimeout(() => this.checkScrollPosition(), 100);
   }
 
   @HostListener('window:scroll', ['$event'])
@@ -43,12 +43,24 @@ export class FooterComponent implements OnInit {
   }
 
   private checkScrollPosition() {
-    const windowHeight = window.innerHeight;
-    const documentHeight = document.documentElement.scrollHeight;
+    // Get total height of the document
+    const documentHeight = Math.max(
+      document.body.scrollHeight,
+      document.body.offsetHeight,
+      document.documentElement.clientHeight,
+      document.documentElement.scrollHeight,
+      document.documentElement.offsetHeight
+    );
+
+    // Get viewport height
+    const viewportHeight = window.innerHeight;
+
+    // Get current scroll position
     const scrollTop = window.scrollY || document.documentElement.scrollTop;
 
-    // Show footer only when we're near the bottom (within 20px)
-    this.showFooter = (windowHeight + scrollTop >= documentHeight - 20);
+    // Check if we're near the bottom of the page
+    // Allow some buffer (e.g., 20px from the bottom)
+    this.showFooter = (scrollTop + viewportHeight >= documentHeight - 20);
   }
 }
 

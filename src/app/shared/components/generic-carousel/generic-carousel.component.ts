@@ -14,7 +14,11 @@ import { CommonModule } from "@angular/common";
   standalone: true,
   imports: [CommonModule],
   template: `
-    <div>
+    <div
+      (touchstart)="onTouchStart($event)"
+      (touchmove)="onTouchMove($event)"
+      (touchend)="onTouchEnd()"
+    >
       <!-- Section Header -->
       <div class="flex items-center justify-between mb-6">
         <h2
@@ -48,7 +52,7 @@ import { CommonModule } from "@angular/common";
       <!-- Loading State -->
       @if(isLoading) {
       <ng-container *ngTemplateOutlet="loadingTemplateRef"></ng-container>
-      } @if(!isLoading) { @if(items.length > 0) {
+      } @else { @if(items.length > 0) {
       <!-- Desktop View -->
       <div [class]="desktopGridClass" class="hidden md:grid">
         <ng-container
@@ -70,27 +74,105 @@ import { CommonModule } from "@angular/common";
       </div>
       } @else {
       <!-- Empty State -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <!-- First item: always visible -->
+      <ng-container
+        *ngTemplateOutlet="
+          emptyStateTemplateRef ||
+          (isDesktop ? desktopEmptyStateTemplate : defaultEmptyStateTemplate)
+        "
+      ></ng-container>
+      } }
+
+      <!-- Pagination -->
+      @if (items.length > 0) { @if (items.length > 20) {
+      <div class="grid md:hidden text-center mt-4 text-gray-400">
+        <div
+          class="flex items-center justify-center gap-2 text-sm text-gray-500 mb-2"
+        >
+          <i class="fas fa-hand-point-left mr-1"></i>
+          Swipe to explore more
+          <i class="fas fa-hand-point-right ml-1"></i>
+        </div>
+        <div class="text-center mt-4">
+          <div
+            class="inline-flex items-center
+                border border-blue-100
+                bg-blue-50/50
+                dark:border-blue-800
+                dark:bg-blue-900/50
+                rounded-full
+                px-4
+                py-1
+                text-sm
+                text-blue-600
+                dark:text-blue-300
+                shadow-sm"
+          >
+            <i class="fas fa-ellipsis-h mr-2 opacity-70"></i>
+            {{ currentPage + 1 }} of {{ getMaxPages() + 1 }}
+          </div>
+        </div>
+      </div>
+      } @if (getMaxPages() > 0) { @if (getMaxPages() <= 20) {
+      <div class="hidden md:flex justify-center mt-4 space-x-2">
+        @for(dot of getPaginationDots(); track $index) {
+        <button
+          class="w-2 h-2 rounded-full"
+          [class.bg-blue-500]="currentPage === $index"
+          [class.bg-gray-300]="currentPage !== $index"
+          (click)="goToPage($index)"
+        ></button>
+        }
+      </div>
+      } @else {
+      <div class="hidden md:flex justify-center mt-4">
+        <div
+          class="inline-flex items-center
+                border border-blue-100
+                bg-blue-50/50
+                dark:border-blue-800
+                dark:bg-blue-900/50
+                rounded-full
+                px-4
+                py-1
+                text-sm
+                text-blue-600
+                dark:text-blue-300
+                shadow-sm"
+        >
+          <i class="fas fa-ellipsis-h mr-2 opacity-70"></i>
+          {{ currentPage + 1 }} of {{ getMaxPages() + 1 }}
+        </div>
+      </div>
+      } } }
+    </div>
+
+    <ng-template #defaultEmptyStateTemplate>
+      <div class="grid grid-cols-1 gap-4">
         <div
           class="bg-gray-800 rounded-lg p-6 flex flex-col items-center justify-center text-center"
         >
-        <i class="fas fa-exclamation-triangle text-4xl text-yellow-500 mb-4"></i>
+          <i
+            class="fas fa-exclamation-triangle text-4xl text-yellow-500 mb-4"
+          ></i>
           <p class="text-gray-300">No data available</p>
         </div>
+      </div>
+    </ng-template>
 
-        <!-- Second and third items: hidden on mobile, visible on md and up -->
-        @for(item of [2, 3]; track item) {
+    <ng-template #desktopEmptyStateTemplate>
+      <div class="grid grid-cols-3 gap-4">
+        @for(i of [1,2,3]; track i) {
         <div
-          class="hidden md:flex bg-gray-800 rounded-lg p-6 flex-col items-center justify-center text-center"
+          class="bg-gray-800 rounded-lg p-6 flex flex-col items-center justify-center text-center"
         >
-          <i class="fas fa-exclamation-triangle text-4xl text-yellow-500 mb-4"></i>
+          <i
+            class="fas fa-exclamation-triangle text-4xl text-yellow-500 mb-4"
+          ></i>
           <p class="text-gray-300">No data available</p>
         </div>
         }
       </div>
-      } }
-    </div>
+    </ng-template>
   `,
 })
 export class GenericCarouselComponent implements OnInit {
@@ -99,14 +181,21 @@ export class GenericCarouselComponent implements OnInit {
   @Input() isLoading: boolean = false;
   @Input() itemsPerPage: number = 4;
   @Input() itemsPerPageMobile: number = 2;
-  @Input() showDots: boolean = false;
-  @Input() showMobileDots: boolean = true;
-  @Input() itemsLabel: string = "items";
   @Input() desktopGridClass: string = "grid-cols-4 gap-4";
   @Input() mobileGridClass: string = "grid-cols-2 gap-4";
   @Input() loadingTemplateRef!: TemplateRef<any>;
   @Input() itemTemplateRef!: TemplateRef<any>;
+  @Input() emptyStateTemplateRef?: TemplateRef<any>;
+  @Input() onPageChange?: (page: number) => void;
+  @Input() minSwipeDistance: number = 50;
+  @Input() maxVerticalDistance: number = 30;
   @Output() pageChange = new EventEmitter<number>();
+
+  // Touch event properties
+  private touchStartX: number = 0;
+  private touchStartY: number = 0;
+  private touchEndX: number = 0;
+  private touchEndY: number = 0;
 
   currentPage: number = 0;
   isDesktop: boolean = window.innerWidth >= 768;
@@ -144,7 +233,7 @@ export class GenericCarouselComponent implements OnInit {
   prevPage(): void {
     if (this.currentPage > 0) {
       this.currentPage--;
-      this.pageChange.emit(this.currentPage);
+      this.emitPageChange();
     }
   }
 
@@ -152,12 +241,55 @@ export class GenericCarouselComponent implements OnInit {
     const maxPages = this.getMaxPages();
     if (this.currentPage < maxPages) {
       this.currentPage++;
-      this.pageChange.emit(this.currentPage);
+      this.emitPageChange();
     }
   }
 
   goToPage(page: number): void {
     this.currentPage = page;
+    this.emitPageChange();
+  }
+
+  private emitPageChange() {
     this.pageChange.emit(this.currentPage);
+    if (this.onPageChange) {
+      this.onPageChange(this.currentPage);
+    }
+  }
+
+  onTouchStart(event: TouchEvent) {
+    this.touchStartX = event.touches[0].clientX;
+    this.touchStartY = event.touches[0].clientY;
+    this.touchEndX = 0;
+    this.touchEndY = 0;
+  }
+
+  onTouchMove(event: TouchEvent) {
+    this.touchEndX = event.touches[0].clientX;
+    this.touchEndY = event.touches[0].clientY;
+  }
+
+  onTouchEnd() {
+    if (this.touchStartX && this.touchEndX) {
+      const swipeDistanceX = this.touchEndX - this.touchStartX;
+      const swipeDistanceY = Math.abs(this.touchEndY - this.touchStartY);
+
+      if (
+        Math.abs(swipeDistanceX) >= this.minSwipeDistance &&
+        swipeDistanceY <= this.maxVerticalDistance
+      ) {
+        if (swipeDistanceX > 0) {
+          this.prevPage();
+        } else {
+          this.nextPage();
+        }
+      }
+    }
+
+    // Reset touch coordinates
+    this.touchStartX = 0;
+    this.touchStartY = 0;
+    this.touchEndX = 0;
+    this.touchEndY = 0;
   }
 }

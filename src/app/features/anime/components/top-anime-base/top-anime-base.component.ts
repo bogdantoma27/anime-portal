@@ -32,12 +32,6 @@ export abstract class TopAnimeBaseComponent {
   }
 
   navigateToAnimeDetails(anime: AnimeResult) {
-    window.scrollTo({
-      top: 0,
-      left: 0,
-      behavior: 'smooth'
-    });
-
     this.router.navigate(["/anime", anime.mal_id], {
       queryParams: { title: anime.title },
     });

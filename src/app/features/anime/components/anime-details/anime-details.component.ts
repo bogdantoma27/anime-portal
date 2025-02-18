@@ -12,11 +12,23 @@ import { GenericCarouselComponent } from "../../../../shared/components/generic-
 import { of, EMPTY } from "rxjs";
 import { UtilsService } from "../../../../core/services/utils.service";
 import { MatDialog } from "@angular/material/dialog";
+import { JoinNamesPipe } from "../../../../core/pipes/join-names.pipe";
+import { NextBroadcastPipe } from "../../../../core/pipes/next-broadcast.pipe";
+import { ExpandableTextDirective } from "../../../../core/directives/expandable-text.directive";
+import { LoadingSpinnerComponent } from "../../../../shared/components/loading-spinner/loading-spinner.component";
 
 @Component({
   selector: "app-anime-details",
   standalone: true,
-  imports: [CommonModule, CharacterCardComponent, GenericCarouselComponent],
+  imports: [
+    CommonModule,
+    CharacterCardComponent,
+    GenericCarouselComponent,
+    JoinNamesPipe,
+    NextBroadcastPipe,
+    ExpandableTextDirective,
+    LoadingSpinnerComponent,
+  ],
   template: `
     <div class="min-h-screen bg-dark-900 text-white">
       <!-- Error Handling -->
@@ -49,30 +61,15 @@ import { MatDialog } from "@angular/material/dialog";
 
       <!-- Anime Details Content -->
       @if(!isMainLoading() && animeDetails()) {
-      <!-- <div className="relative">
-        <div class="absolute inset-0">
-          <img
-            [src]="animeDetails()!.data.images.jpg?.large_image_url"
-            class="absolute inset-0 w-full lg:h-[575px] sm:h-[650px] md:h-[650px] mm:h-[935px] object-cover z-0"
-          />
-          <div
-            class="absolute inset-0 bg-black/60 backdrop-blur-sm lg:h-[575px] sm:h-[650px] md:h-[650px] mm:h-[935px]"
-          ></div>
-        </div>
-
-        <div class="container mx-auto px-4 relative z-20 pt-6 pb-16">
-          <div
-            class="flex flex-col md:flex-row space-y-6 md:space-y-0 md:space-x-8"
-          > -->
       <div class="relative">
         <!-- Full Width Background Image with Blur -->
         <div class="absolute -inset-x-6 -top-12 bottom-0 overflow-hidden">
           <img
             [src]="animeDetails()!.data.images.jpg?.large_image_url"
-            class="absolute inset-0 w-full min-h-[1100px] sm:min-h-[1200px] md:min-h-[900px] object-cover z-0"
+            class="absolute inset-0 w-full min-h-[1150px] md:min-h-[900px] object-cover z-0"
           />
           <div
-            class="absolute inset-0 bg-black/60 backdrop-blur-sm min-h-[1100px] sm:min-h-[1200px] md:min-h-[900px]"
+            class="absolute inset-0 bg-black/60 backdrop-blur-sm min-h-[1150px] md:min-h-[900px]"
           ></div>
         </div>
 
@@ -83,7 +80,7 @@ import { MatDialog } from "@angular/material/dialog";
             <!-- Poster -->
             <img
               [src]="animeDetails()!.data.images.jpg?.image_url"
-              class="w-[250px] lg:h-[395px] mm:h-[325px] object-cover rounded-lg shadow-lg self-center md:self-start"
+              class="w-[300px] lg:h-[550px] lg:w-[355px] mm:h-[275px] mm:w-[175px] object-cover rounded-lg shadow-lg self-center md:self-start"
             />
 
             <!-- Details -->
@@ -141,6 +138,101 @@ import { MatDialog } from "@angular/material/dialog";
                 </span>
               </div>
 
+              <!-- Additional Information Section -->
+              <div
+                class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2 mb-4 mt-2"
+              >
+                <!--Broadcast Information-->
+                @if (animeDetails()!.data.broadcast) {
+                <div
+                  class="bg-gradient-to-br from-blue-900/50 to-purple-900/50 border border-blue-800/30 rounded-lg p-4"
+                >
+                  <div class="flex items-start space-x-3">
+                    <div class="flex-1 min-w-0">
+                      <!-- Added min-w-0 for text truncation -->
+                      <h3 class="text-sm font-semibold text-blue-300 mb-1">
+                        Broadcast
+                      </h3>
+                      <p class="text-white text-sm break-words" expandableText>
+                        @if ((animeDetails()!.data.broadcast?.string |
+                        nextBroadcast | async); as broadcastData) {
+                        {{ broadcastData }}
+                        } @else if (!(animeDetails()!.data.broadcast?.string)) {
+                        No data available } @else {
+                          <div class="h-12">
+                            <app-loading-spinner size="md" />
+                          </div>
+                        }
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                }
+
+                <!--Producers-->
+                @if (animeDetails()!.data.producers) {
+                <div
+                  class="bg-gradient-to-br from-green-900/50 to-teal-900/50 border border-green-800/30 rounded-lg p-4"
+                >
+                  <div class="flex items-start space-x-3">
+                    <div class="flex-1 min-w-0">
+                      <h3 class="text-sm font-semibold text-green-300 mb-1">
+                        Producers
+                      </h3>
+                      <p class="text-white text-sm break-words" expandableText>
+                        {{
+                          (animeDetails()!.data.producers | joinNames) ||
+                            "No data available"
+                        }}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                }
+
+                <!--Studios-->
+                @if (animeDetails()!.data.studios) {
+                <div
+                  class="bg-gradient-to-br from-red-900/50 to-pink-900/50 border border-red-800/30 rounded-lg p-4"
+                >
+                  <div class="flex items-start space-x-3">
+                    <div class="flex-1 min-w-0">
+                      <h3 class="text-sm font-semibold text-red-300 mb-1">
+                        Studios
+                      </h3>
+                      <p class="text-white text-sm break-words" expandableText>
+                        {{
+                          (animeDetails()!.data.studios | joinNames) ||
+                            "No data available"
+                        }}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                }
+
+                <!--Licensors-->
+                @if (animeDetails()!.data.licensors) {
+                <div
+                  class="bg-gradient-to-br from-yellow-900/50 to-orange-900/50 border border-yellow-800/30 rounded-lg p-4"
+                >
+                  <div class="flex items-start space-x-3">
+                    <div class="flex-1 min-w-0">
+                      <h3 class="text-sm font-semibold text-yellow-300 mb-1">
+                        Licensors
+                      </h3>
+                      <p class="text-white text-sm break-words" expandableText>
+                        {{
+                          (animeDetails()!.data.licensors | joinNames) ||
+                            "No data available"
+                        }}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                }
+              </div>
+
               <!-- Action Buttons -->
               <div
                 class="flex justify-center md:justify-start space-x-4 mb-4 mt-2"
@@ -160,7 +252,7 @@ import { MatDialog } from "@angular/material/dialog";
 
               <!-- Synopsis -->
               <div
-                class="max-h-[150px] overflow-y-auto custom-scrollbar text-gray-300 mb-4 text-sm md:text-base pr-2"
+                class="max-h-[240px] lg:max-h-[187px] overflow-y-auto custom-scrollbar text-gray-300 mb-4 text-sm md:text-base pr-2"
               >
                 {{ animeDetails()?.data?.synopsis }}
               </div>
@@ -192,33 +284,12 @@ import { MatDialog } from "@angular/material/dialog";
           [items]="animeCharacters()?.data ?? []"
           [isLoading]="isCharactersLoading()"
           [itemsPerPage]="10"
-          [itemsPerPageMobile]="2"
-          [showDots]="true"
-          [showMobileDots]="false"
+          [itemsPerPageMobile]="4"
           desktopGridClass="grid-cols-5 gap-4"
           mobileGridClass="grid-cols-2 gap-4"
           [loadingTemplateRef]="characterLoadingTemplate"
           [itemTemplateRef]="characterTemplate"
-          #characterCarousel
         ></app-generic-carousel>
-
-        <!-- Mobile Pagination Text -->
-        <div class="md:hidden text-center mt-4 text-gray-400">
-          Page {{ characterCarousel.currentPage + 1 }} of
-          {{ characterCarousel.getMaxPages() + 1 }}
-        </div>
-
-        <!-- Desktop Dots -->
-        <div class="hidden md:flex justify-center mt-4 space-x-2">
-          @for(dot of characterCarousel.getPaginationDots(); track $index) {
-          <button
-            class="w-2 h-2 rounded-full"
-            [class.bg-blue-500]="characterCarousel.currentPage === $index"
-            [class.bg-gray-300]="characterCarousel.currentPage !== $index"
-            (click)="characterCarousel.goToPage($index)"
-          ></button>
-          }
-        </div>
       </div>
 
       <!-- Reviews Section -->
@@ -229,34 +300,11 @@ import { MatDialog } from "@angular/material/dialog";
           [isLoading]="isReviewsLoading()"
           [itemsPerPage]="3"
           [itemsPerPageMobile]="1"
-          [showDots]="true"
-          [showMobileDots]="false"
           desktopGridClass="grid-cols-3 gap-4"
           mobileGridClass="grid-cols-1 gap-4"
           [loadingTemplateRef]="reviewLoadingTemplate"
           [itemTemplateRef]="reviewTemplate"
-          #reviewCarousel
         ></app-generic-carousel>
-
-        <!-- Mobile Pagination Text -->
-        @if (!(reviews()?.data)) {
-        <div class="md:hidden text-center mt-4 text-gray-400">
-          Page {{ reviewCarousel.currentPage + 1 }} of
-          {{ reviewCarousel.getMaxPages() + 1 }}
-        </div>
-        }
-
-        <!-- Desktop Dots -->
-        <div class="hidden md:flex justify-center mt-4 space-x-2">
-          @for(dot of reviewCarousel.getPaginationDots(); track $index) {
-          <button
-            class="w-2 h-2 rounded-full"
-            [class.bg-blue-500]="reviewCarousel.currentPage === $index"
-            [class.bg-gray-300]="reviewCarousel.currentPage !== $index"
-            (click)="reviewCarousel.goToPage($index)"
-          ></button>
-          }
-        </div>
       </div>
 
       <!-- Recommendations Section -->
@@ -266,41 +314,17 @@ import { MatDialog } from "@angular/material/dialog";
           [items]="recommendations()?.data ?? []"
           [isLoading]="isRecommendationsLoading()"
           [itemsPerPage]="10"
-          [itemsPerPageMobile]="2"
-          [showDots]="true"
-          [showMobileDots]="false"
+          [itemsPerPageMobile]="4"
           desktopGridClass="grid-cols-5 gap-4"
           mobileGridClass="grid-cols-2 gap-4"
           [loadingTemplateRef]="recommendationLoadingTemplate"
           [itemTemplateRef]="recommendationTemplate"
-          #recommendationCarousel
         ></app-generic-carousel>
-
-        <!-- Mobile Pagination Text -->
-        @if (!(recommendations()?.data)) {
-        <div class="md:hidden text-center mt-4 text-gray-400">
-          Page {{ recommendationCarousel.currentPage + 1 }} of
-          {{ recommendationCarousel.getMaxPages() + 1 }}
-        </div>
-        }
-
-        <!-- Desktop Dots -->
-        <div class="hidden md:flex justify-center mt-4 space-x-2">
-          @for(dot of recommendationCarousel.getPaginationDots(); track $index)
-          {
-          <button
-            class="w-2 h-2 rounded-full"
-            [class.bg-blue-500]="recommendationCarousel.currentPage === $index"
-            [class.bg-gray-300]="recommendationCarousel.currentPage !== $index"
-            (click)="recommendationCarousel.goToPage($index)"
-          ></button>
-          }
-        </div>
       </div>
       }
     </div>
 
-    <!-- Templates -->
+    <!-- Templates remain the same as in the previous implementation -->
     <ng-template #characterLoadingTemplate>
       <div class="grid grid-cols-2 md:grid-cols-5 gap-4 animate-pulse">
         @for(i of [1,2,3,4,5,6,7,8,9,10]; track i) {
@@ -324,32 +348,6 @@ import { MatDialog } from "@angular/material/dialog";
       ></app-character-card>
       }
     </ng-template>
-
-    <!-- <ng-template #characterTemplate let-characters>
-  @for(character of characters; track character.mal_id + '_' + $index) {
-    <div class="relative">
-
-      <div
-        class="absolute top-2 left-2 z-10 text-white text-xs px-2 py-1 rounded opacity-90"
-        [class.bg-green-500]="character.role === 'Main'"
-        [class.bg-orange-500]="character.role !== 'Main'">
-        {{character.role}}
-      </div>
-
-      <img
-        [src]="character.character.images.jpg?.image_url || '/assets/placeholder-character.png'"
-        [alt]="character.character.name"
-        class="w-full h-72 object-cover rounded-lg" />
-
-
-      <div class="absolute bottom-0 left-0 right-0 bg-black bg-opacity-70 p-2 rounded-b-lg">
-        <h3 class="text-yellow-400 text-center font-medium text-sm truncate">
-          {{character.character.name}}
-        </h3>
-      </div>
-    </div>
-  }
-</ng-template> -->
 
     <ng-template #reviewLoadingTemplate>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -451,15 +449,6 @@ export class AnimeDetailsComponent implements OnInit {
   randomBackgroundImage = signal<string | null>(null);
   errorMessage = signal<string | null>(null);
 
-  // Carousel states
-  currentReviewIndex = 0;
-  currentCharactersPage = 0;
-  currentRecommendationsPage = 0;
-
-  // Items per page constants
-  private readonly DESKTOP_ITEMS_PER_PAGE = 10; // 2 rows of 5
-  private readonly MOBILE_ITEMS_PER_PAGE = 2; // 1 row of 2
-
   ngOnInit() {
     this.route.paramMap
       .pipe(
@@ -487,132 +476,6 @@ export class AnimeDetailsComponent implements OnInit {
       .subscribe((animeId) => {
         this.fetchAnimeData(animeId);
       });
-  }
-
-  // ngOnInit() {
-  //   const animeId = this.route.snapshot.paramMap.get("id");
-  //   if (animeId) {
-  //     this.fetchAnimeData(Number(animeId));
-  //   }
-  // }
-
-  // Characters pagination methods
-  getCurrentCharacters(): Character[] {
-    const characters = this.animeCharacters()?.data ?? [];
-    const itemsPerPage =
-      window.innerWidth >= 768
-        ? this.DESKTOP_ITEMS_PER_PAGE
-        : this.MOBILE_ITEMS_PER_PAGE;
-    const startIndex = this.currentCharactersPage * itemsPerPage;
-    return characters.slice(startIndex, startIndex + itemsPerPage);
-  }
-
-  getMaxCharactersPages(): number {
-    const characters = this.animeCharacters()?.data ?? [];
-    const itemsPerPage =
-      window.innerWidth >= 768
-        ? this.DESKTOP_ITEMS_PER_PAGE
-        : this.MOBILE_ITEMS_PER_PAGE;
-    return Math.ceil(characters.length / itemsPerPage) - 1;
-  }
-
-  prevCharactersPage() {
-    if (this.currentCharactersPage > 0) {
-      this.currentCharactersPage--;
-    }
-  }
-
-  nextCharactersPage() {
-    const maxPages = this.getMaxCharactersPages();
-    if (this.currentCharactersPage < maxPages) {
-      this.currentCharactersPage++;
-    }
-  }
-
-  goToCharactersPage(page: number) {
-    this.currentCharactersPage = page;
-  }
-
-  getCharactersPaginationDots(): number[] {
-    const characters = this.animeCharacters()?.data ?? [];
-    const itemsPerPage = this.MOBILE_ITEMS_PER_PAGE;
-    return Array(Math.ceil(characters.length / itemsPerPage))
-      .fill(0)
-      .map((_, i) => i);
-  }
-
-  // Recommendations pagination methods
-  getCurrentRecommendations(): Recommendation[] {
-    const recommendations = this.recommendations()?.data ?? [];
-    const itemsPerPage =
-      window.innerWidth >= 768
-        ? this.DESKTOP_ITEMS_PER_PAGE
-        : this.MOBILE_ITEMS_PER_PAGE;
-    const startIndex = this.currentRecommendationsPage * itemsPerPage;
-    return recommendations.slice(startIndex, startIndex + itemsPerPage);
-  }
-
-  getMaxRecommendationsPages(): number {
-    const recommendations = this.recommendations()?.data ?? [];
-    const itemsPerPage =
-      window.innerWidth >= 768
-        ? this.DESKTOP_ITEMS_PER_PAGE
-        : this.MOBILE_ITEMS_PER_PAGE;
-    return Math.ceil(recommendations.length / itemsPerPage) - 1;
-  }
-
-  prevRecommendationsPage() {
-    if (this.currentRecommendationsPage > 0) {
-      this.currentRecommendationsPage--;
-    }
-  }
-
-  nextRecommendationsPage() {
-    const maxPages = this.getMaxRecommendationsPages();
-    if (this.currentRecommendationsPage < maxPages) {
-      this.currentRecommendationsPage++;
-    }
-  }
-
-  goToRecommendationsPage(page: number) {
-    this.currentRecommendationsPage = page;
-  }
-
-  getRecommendationsPaginationDots(): number[] {
-    const recommendations = this.recommendations()?.data ?? [];
-    const itemsPerPage = this.MOBILE_ITEMS_PER_PAGE;
-    return Array(Math.ceil(recommendations.length / itemsPerPage))
-      .fill(0)
-      .map((_, i) => i);
-  }
-
-  // Reviews pagination methods (kept from original)
-  get maxReviewIndex(): number {
-    return this.reviews()?.data
-      ? Math.max(0, Math.floor((this.reviews()!.data.length - 1) / 3))
-      : 0;
-  }
-
-  prevReview() {
-    this.currentReviewIndex = Math.max(0, this.currentReviewIndex - 1);
-  }
-
-  nextReview() {
-    this.currentReviewIndex = Math.min(
-      this.maxReviewIndex,
-      this.currentReviewIndex + 1
-    );
-  }
-
-  goToReview(index: number) {
-    this.currentReviewIndex = index;
-  }
-
-  getReviewDots(): number[] {
-    const reviewsCount = this.reviews()?.data?.length ?? 0;
-    return Array(Math.ceil(reviewsCount / 3))
-      .fill(0)
-      .map((_, i) => i);
   }
 
   private fetchAnimeData(animeId: number) {
@@ -706,12 +569,6 @@ export class AnimeDetailsComponent implements OnInit {
   }
 
   navigateToRecommendation(recommendationId: number, title: string) {
-    window.scrollTo({
-      top: 0,
-      left: 0,
-      behavior: 'smooth'
-    });
-
     // Force a complete route reload
     this.router.navigateByUrl("/", { skipLocationChange: true }).then(() => {
       this.router.navigate(["/anime", recommendationId], {

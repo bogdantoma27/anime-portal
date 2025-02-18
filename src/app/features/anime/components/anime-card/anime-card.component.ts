@@ -89,7 +89,7 @@ import { DomSanitizer, SafeHtml } from "@angular/platform-browser";
             />
 
             <!-- Mobile Details -->
-            <div
+            <!-- <div
               class="md:hidden absolute inset-0 bg-black bg-opacity-70 p-4 text-white flex flex-col justify-between"
             >
               <div class="mb-4 mt-6">
@@ -110,11 +110,11 @@ import { DomSanitizer, SafeHtml } from "@angular/platform-browser";
                   </p>
                 </div>
               </div>
-            </div>
+            </div> -->
 
-            <!-- Title at the bottom (Desktop only) -->
+            <!-- Title at the bottom (Desktop only)  hidden md:block  -->
             <div
-              class="hidden md:block absolute bottom-0 left-0 right-0 bg-black bg-opacity-70 p-2"
+              class="absolute bottom-0 left-0 right-0 bg-black bg-opacity-70 p-2"
             >
               <h3
                 class="text-yellow-400 text-center font-medium text-sm truncate"
@@ -179,12 +179,6 @@ export class AnimeCardComponent {
   private sanitizer = inject(DomSanitizer);
 
   navigateToAnimeDetails() {
-    window.scrollTo({
-      top: 0,
-      left: 0,
-      behavior: 'smooth'
-    });
-
     this.router.navigate(["/anime", this.anime().mal_id], {
       queryParams: { title: this.anime().title },
     });

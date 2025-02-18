@@ -247,7 +247,7 @@ import { UtilsService } from "../../core/services/utils.service";
           <div class="w-1 h-6 bg-blue-600 mr-3"></div>
           Seasonal Anime
         </h2>
-        <span class="font-medium italic">{{ seasonalAnimes()[0].season | titlecase }}
+        <span class="lg:text-lg font-medium italic mm:font-normal mm:text-base mm:ms-2 mt-1">{{ seasonalAnimes()[0].season | titlecase }}
           {{ seasonalAnimes()[0].year }} </span>
       </div>
       <div
@@ -678,7 +678,7 @@ export class HomeComponent implements OnInit {
     return `
         <!-- Episodes (Top Left) -->
         <div class="absolute top-2 left-2 z-10 bg-green-600 text-white text-xs px-2 py-1 rounded opacity-90">
-          <i class="fa-solid fa-tv mr-1"></i>
+          <!-- <i class="fa-solid fa-tv mr-1"></i> -->
           Ep ${anime.episodes || "??"}
         </div>
     `;
