@@ -66,10 +66,10 @@ import { LoadingSpinnerComponent } from "../../../../shared/components/loading-s
         <div class="absolute -inset-x-6 -top-12 bottom-0 overflow-hidden">
           <img
             [src]="animeDetails()!.data.images.jpg?.large_image_url"
-            class="absolute inset-0 w-full min-h-[1150px] md:min-h-[900px] object-cover z-0"
+            class="absolute inset-0 w-full min-h-[1375px] md:min-h-[900px] object-cover z-0"
           />
           <div
-            class="absolute inset-0 bg-black/60 backdrop-blur-sm min-h-[1150px] md:min-h-[900px]"
+            class="absolute inset-0 bg-black/60 backdrop-blur-sm min-h-[1375px] md:min-h-[900px]"
           ></div>
         </div>
 
@@ -153,13 +153,13 @@ import { LoadingSpinnerComponent } from "../../../../shared/components/loading-s
                       <h3 class="text-sm font-semibold text-blue-300 mb-1">
                         Broadcast
                       </h3>
-                      <p class="text-white text-sm break-words" expandableText>
+                      <p class="text-white text-sm break-words mm:min-h-[65px] lg:min-h-[35px]" expandableText>
                         @if ((animeDetails()!.data.broadcast?.string |
                         nextBroadcast | async); as broadcastData) {
                         {{ broadcastData }}
                         } @else if (!(animeDetails()!.data.broadcast?.string)) {
                         No data available } @else {
-                          <div class="h-12">
+                          <div class="h-10">
                             <app-loading-spinner size="md" />
                           </div>
                         }
@@ -277,7 +277,7 @@ import { LoadingSpinnerComponent } from "../../../../shared/components/loading-s
       } @if(!isMainLoading()) {
       <!-- Characters Section -->
       <div
-        class="container mx-auto px-4 mt-8 md:mt-[120px] lg:mt-[20px] relative z-10"
+        class="container mx-auto px-4 mt-8 md:mt-[120px] lg:mt-[30px] relative z-10"
       >
         <app-generic-carousel
           title="Characters"
