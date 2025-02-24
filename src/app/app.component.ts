@@ -10,7 +10,7 @@ import { FooterComponent } from "./features/layout/footer/footer.component";
     <!-- Header -->
     <app-header />
 
-    <main class="px-6 pt-28 pb-[6rem] min-h-screen">
+    <main class="px-4 sm:px-6 pt-20 sm:pt-28 pb-[6rem] min-h-screen">
       <router-outlet />
     </main>
 
